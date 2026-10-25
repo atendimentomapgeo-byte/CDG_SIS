@@ -508,6 +508,40 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
   .modal-box-foot { position: sticky; bottom: 0; background: var(--surface); padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
 }
 
+
+/* ---- Agenda geral (mês) ---- */
+.cm-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; max-width: 520px; margin-bottom: 16px; }
+.cm-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cm-titulo { font-weight: 700; font-size: 15px; }
+.cm-titulo::first-letter, .cm-dt::first-letter { text-transform: uppercase; }
+.cm-nav { display: flex; gap: 6px; align-items: center; }
+.cm-nav button { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; min-width: 34px; height: 34px; cursor: pointer; padding: 0 8px; font-size: 12px; }
+.cm-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cm-dow div { text-align: center; font-size: 12px; font-weight: 700; padding: 8px 0; }
+.cm-dia { background: none; border: none; color: var(--text); cursor: pointer; padding: 3px 0; display: flex; justify-content: center; }
+.cm-dia.fora { opacity: .35; }
+.cm-dia.passado { opacity: .5; }
+.cm-dia.passado.fora { opacity: .25; }
+.cm-num { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 14px; position: relative; border: 2px solid transparent; }
+.cm-dia.sel .cm-num { border-color: var(--text-muted); border-radius: 10px; }
+.cm-num.hoje { background: var(--primary); color: #fff; border-radius: 50%; font-weight: 700; }
+.cm-dia.sel .cm-num.hoje { border-color: var(--text); border-radius: 50%; }
+.cm-num.tem { background: var(--primary-tint); color: var(--primary); border: 2px solid var(--primary); border-radius: 8px; font-weight: 700; }
+.cm-num.tem-passado::after, .cm-num.hoje-tem::after { content: ''; position: absolute; bottom: 3px; width: 5px; height: 5px; background: var(--primary); border-radius: 1px; }
+.cm-num.hoje-tem::after { background: #fff; }
+.cm-legenda { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: var(--text-muted); }
+.cm-legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.cm-ex { width: 14px; height: 14px; display: inline-block; }
+.cm-ex.hoje { background: var(--primary); border-radius: 50%; }
+.cm-ex.tem { border: 2px solid var(--primary); background: var(--primary-tint); border-radius: 3px; }
+.cm-painel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.cm-painel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.cm-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.cm-item:last-child { border-bottom: none; }
+.cm-hora { font-weight: 700; min-width: 52px; font-size: 14px; }
+.cm-hora small { display: block; font-weight: 400; font-size: 10.5px; color: var(--text-muted); }
+.cm-info { flex: 1; min-width: 140px; }
+@media (max-width: 640px) { .cm-wrap { max-width: 100%; padding: 10px; } .cm-num { width: 36px; height: 36px; } .cm-item .row-actions { width: 100%; } }
 </style>
 </head>
 <body data-theme="dark" data-density="compact">
@@ -645,12 +679,13 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
         <select id="agendaPaciente"></select>
       </div>
       <div class="field-row">
-        <div class="field"><label>Data</label><input type="date" id="agendaData"></div>
-        <div class="field"><label>Horário</label><input type="time" id="agendaHora"></div>
+        <div class="field"><label>Data</label><input type="date" id="agendaData" onchange="atualizarHorariosAgenda()"></div>
+        <div class="field"><label>Horário</label><select id="agendaHora"></select></div>
       </div>
       <div class="field"><label>Profissional</label>
-        <select id="agendaProfissional"></select>
+        <select id="agendaProfissional" onchange="atualizarHorariosAgenda()"></select>
       </div>
+      <div class="muted" id="agendaInfo" style="font-size:12px; margin:-4px 0 10px;"></div>
       <div class="field"><label>Observação</label><textarea id="agendaObs" rows="2" placeholder="opcional"></textarea></div>
     </div>
     <div class="modal-box-foot">
@@ -934,6 +969,9 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
       <div class="field-row">
         <div class="field"><label>Telefone</label><input type="text" id="profissionalTelefone" placeholder="opcional"></div>
         <div class="field"><label>Cor na agenda</label><input type="color" id="profissionalCor" value="#14B8A6" style="height:38px; padding:3px;"></div>
+      </div>
+      <div class="field"><label>Duração de cada atendimento</label>
+        <select id="profissionalDuracao"></select>
       </div>
       <div class="field">
         <label>Logo / Assinatura <span style="font-weight:400;color:var(--text-muted)">(marca d'água no PDF — PNG ou JPG)</span></label>
@@ -1431,7 +1469,7 @@ function desenharGraficoSemana(agenda) {
 }
 
 // -------------------- AGENDA --------------------
-let agendaView = 'lista';   // 'lista' | 'semana'
+let agendaView = 'mes';   // 'mes' | 'lista' | 'semana'
 let agendaWeekOffset = 0;   // 0 = semana atual, -1 = anterior, +1 = próxima
 
 function getInicioSemana(dataBase) {
@@ -1442,7 +1480,7 @@ function getInicioSemana(dataBase) {
   d.setHours(0, 0, 0, 0);
   return d;
 }
-function paraIso(d) { return d.toISOString().slice(0, 10); }
+function paraIso(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
 
 function renderAgenda(root) {
   const agenda = agendaVisivel();
@@ -1452,6 +1490,7 @@ function renderAgenda(root) {
       <div><h1>Agenda</h1><p>${agenda.length} agendamento(s) no total</p></div>
       <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
         <div class="view-toggle">
+          <button id="btnViewMes" class="${agendaView === 'mes' ? 'active' : ''}" onclick="mudarVisaoAgenda('mes')"><i class="bi bi-calendar3"></i> Mês</button>
           <button id="btnViewLista" class="${agendaView === 'lista' ? 'active' : ''}" onclick="mudarVisaoAgenda('lista')"><i class="bi bi-list-ul"></i> Lista</button>
           <button id="btnViewSemana" class="${agendaView === 'semana' ? 'active' : ''}" onclick="mudarVisaoAgenda('semana')"><i class="bi bi-calendar-week"></i> Semana</button>
         </div>
@@ -1473,7 +1512,160 @@ function renderConteudoAgenda() {
   const container = document.getElementById('agendaConteudo');
   if (!container) return;
   if (agendaView === 'semana') renderAgendaSemana(container);
+  else if (agendaView === 'mes') renderAgendaMes(container);
   else renderAgendaLista(container);
+}
+
+
+// -------------------- AGENDA GERAL (mês) e regras de horário --------------------
+const AGENDA_PASSO_MIN = 10;          // horários sempre de 10 em 10 minutos
+const AGENDA_INICIO_MIN = 6 * 60;     // primeiro horário possível: 06:00
+const AGENDA_FIM_MIN = 22 * 60;       // último atendimento deve terminar até 22:00
+const AGENDA_ANTECEDENCIA_MS = 60 * 60 * 1000; // mínimo de 1 hora de antecedência
+
+let agendaMes = null;     // {y, m}
+let agendaDiaSel = null;  // 'AAAA-MM-DD'
+
+function hojeIso() { return paraIso(new Date()); }
+function hmParaMin(h) { const [a, b] = String(h).split(':').map(Number); return a * 60 + b; }
+function minParaHm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
+function duracaoDoProfissional(nome) {
+  const p = db.ler(DB_KEYS.profissionais).find(x => x.nome === nome);
+  return (p && Number(p.duracaoMin)) || 50;
+}
+function duracaoDoAgendamento(a) { return Number(a.duracaoMin) || duracaoDoProfissional(a.profissional); }
+function preencherDuracoesProf(atual) {
+  const el = document.getElementById('profissionalDuracao');
+  let h = '';
+  for (let m = 10; m <= 180; m += 10) h += `<option value="${m}" ${m === Number(atual) ? 'selected' : ''}>${m} minutos</option>`;
+  el.innerHTML = h;
+}
+function inicioDoSlot(dataIso, min) {
+  const [y, mo, d] = dataIso.split('-').map(Number);
+  return new Date(y, mo - 1, d, Math.floor(min / 60), min % 60, 0, 0);
+}
+// Retorna null se o horário é permitido; senão o motivo.
+function motivoHorarioBloqueado(dataIso, hora, profissional, ignorarId) {
+  if (!dataIso || !hora) return 'Informe data e horário.';
+  if (dataIso < hojeIso()) return 'Não é permitido agendar em data anterior à atual.';
+  const ini = hmParaMin(hora);
+  if (ini % AGENDA_PASSO_MIN !== 0) return 'Os horários devem ser de 10 em 10 minutos.';
+  if (inicioDoSlot(dataIso, ini).getTime() < Date.now() + AGENDA_ANTECEDENCIA_MS) return 'O horário deve ter pelo menos 1 hora de antecedência.';
+  const dur = duracaoDoProfissional(profissional);
+  const fim = ini + dur;
+  if (ini < AGENDA_INICIO_MIN || fim > AGENDA_FIM_MIN) return 'Horário fora do expediente (06:00 às 22:00).';
+  const conflito = db.ler(DB_KEYS.agenda).find(a => a.id !== ignorarId && a.profissional === profissional && a.data === dataIso && a.status !== 'cancelado'
+    && ini < hmParaMin(a.hora) + duracaoDoAgendamento(a) && fim > hmParaMin(a.hora));
+  if (conflito) return 'Já existe um agendamento deste profissional nesse intervalo (' + conflito.hora + ').';
+  return null;
+}
+function atualizarHorariosAgenda() {
+  const data = document.getElementById('agendaData').value;
+  const prof = document.getElementById('agendaProfissional').value;
+  const sel = document.getElementById('agendaHora');
+  const anterior = sel.value;
+  const dur = duracaoDoProfissional(prof);
+  let h = '', livres = 0, primeiro = '';
+  for (let m = AGENDA_INICIO_MIN; m + dur <= AGENDA_FIM_MIN; m += AGENDA_PASSO_MIN) {
+    const hm = minParaHm(m);
+    const bloq = data ? motivoHorarioBloqueado(data, hm, prof) : 'x';
+    if (!bloq) { livres++; if (!primeiro) primeiro = hm; h += `<option value="${hm}">${hm} – ${minParaHm(m + dur)}</option>`; }
+  }
+  sel.innerHTML = h || '<option value="">Sem horários disponíveis</option>';
+  if (anterior && sel.querySelector(`option[value="${anterior}"]`)) sel.value = anterior;
+  const info = document.getElementById('agendaInfo');
+  if (info) info.textContent = `Duração do atendimento: ${dur} min · ${livres} horário(s) livre(s) neste dia`;
+}
+
+function renderAgendaMes(container) {
+  const agenda = agendaVisivel().filter(a => a.status !== 'cancelado');
+  const hoje = hojeIso();
+  if (!agendaMes) { const n = new Date(); agendaMes = { y: n.getFullYear(), m: n.getMonth() }; }
+  if (!agendaDiaSel) agendaDiaSel = hoje;
+  const { y, m } = agendaMes;
+  const primeiro = new Date(y, m, 1);
+  const inicio = new Date(y, m, 1 - primeiro.getDay());
+  const porDia = {};
+  agenda.forEach(a => { porDia[a.data] = (porDia[a.data] || 0) + 1; });
+  const titulo = primeiro.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  let cel = '';
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i);
+    const iso = paraIso(d);
+    const fora = d.getMonth() !== m;
+    const passado = iso < hoje;
+    const ehHoje = iso === hoje;
+    const tem = !!porDia[iso];
+    const cls = ['cm-num', ehHoje ? 'hoje' : '', (tem && iso > hoje) ? 'tem' : '', (tem && passado) ? 'tem-passado' : '', (tem && ehHoje) ? 'hoje-tem' : ''].join(' ');
+    cel += `<button type="button" class="cm-dia ${fora ? 'fora' : ''} ${passado ? 'passado' : ''} ${iso === agendaDiaSel ? 'sel' : ''}" onclick="selecionarDiaAgenda('${iso}')" title="${tem ? porDia[iso] + ' agendamento(s)' : ''}"><span class="${cls}">${d.getDate()}</span></button>`;
+  }
+  container.innerHTML = `
+    <div class="cm-wrap">
+      <div class="cm-head">
+        <div class="cm-titulo">${titulo}</div>
+        <div class="cm-nav">
+          <button type="button" onclick="navegarMesAgenda(-1)" title="Mês anterior"><i class="bi bi-chevron-left"></i></button>
+          <button type="button" onclick="irParaHojeAgenda()" class="cm-hoje">Hoje</button>
+          <button type="button" onclick="navegarMesAgenda(1)" title="Próximo mês"><i class="bi bi-chevron-right"></i></button>
+        </div>
+      </div>
+      <div class="cm-grid cm-dow">${['D','S','T','Q','Q','S','S'].map(x => `<div>${x}</div>`).join('')}</div>
+      <div class="cm-grid">${cel}</div>
+      <div class="cm-legenda">
+        <span><i class="cm-ex hoje"></i> Hoje</span>
+        <span><i class="cm-ex tem"></i> Com agendamento</span>
+      </div>
+    </div>
+    <div id="agendaDiaPainel"></div>`;
+  renderPainelDiaAgenda();
+}
+
+function renderPainelDiaAgenda() {
+  const box = document.getElementById('agendaDiaPainel');
+  if (!box) return;
+  const pacientes = db.ler(DB_KEYS.pacientes);
+  const hoje = hojeIso();
+  const lista = agendaVisivel().filter(a => a.data === agendaDiaSel).sort((a, b) => a.hora.localeCompare(b.hora));
+  const passado = agendaDiaSel < hoje;
+  const dt = new Date(agendaDiaSel + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+  box.innerHTML = `
+    <div class="cm-painel">
+      <div class="cm-painel-head">
+        <div><strong class="cm-dt">${dt}</strong><div class="muted" style="font-size:12px;">${lista.length} agendamento(s)</div></div>
+        ${passado ? '<span class="muted" style="font-size:12px;">Data passada: não é possível agendar</span>'
+                  : `<button class="btn btn-primary" onclick="abrirModalAgenda('${agendaDiaSel}')"><i class="bi bi-plus-lg"></i> Agendar neste dia</button>`}
+      </div>
+      ${lista.length ? lista.map(a => {
+        const pc = pacientes.find(x => x.id === a.pacienteId);
+        const badge = a.status === 'confirmado' ? 'badge-ok' : (a.status === 'cancelado' ? 'badge-off' : 'badge-warn');
+        return `<div class="cm-item">
+          <div class="cm-hora">${a.hora}<small>até ${minParaHm(hmParaMin(a.hora) + duracaoDoAgendamento(a))}</small></div>
+          <div class="cm-info"><div>${pc ? pc.nome : '<span class="muted">removido</span>'}</div><div class="muted" style="font-size:12px;">${a.profissional}</div></div>
+          <span class="badge ${badge}">${a.status}</span>
+          <div class="row-actions">
+            <button title="Enviar lembrete via WhatsApp" onclick="enviarLembreteAgendamento('${a.id}')"><i class="bi bi-whatsapp"></i></button>
+            <button title="Confirmar" onclick="mudarStatusAgenda('${a.id}','confirmado')"><i class="bi bi-check2"></i></button>
+            <button title="Cancelar" onclick="mudarStatusAgenda('${a.id}','cancelado')"><i class="bi bi-x"></i></button>
+            <button title="Excluir" onclick="excluirAgendamento('${a.id}')"><i class="bi bi-trash3"></i></button>
+          </div>
+        </div>`;
+      }).join('') : '<div class="empty"><i class="bi bi-calendar-x"></i>Nenhum agendamento neste dia</div>'}
+    </div>`;
+}
+function selecionarDiaAgenda(iso) {
+  agendaDiaSel = iso;
+  const [y, m] = iso.split('-').map(Number);
+  if (agendaMes && (agendaMes.y !== y || agendaMes.m !== m - 1)) agendaMes = { y, m: m - 1 };
+  renderConteudoAgenda();
+}
+function navegarMesAgenda(delta) {
+  const d = new Date(agendaMes.y, agendaMes.m + delta, 1);
+  agendaMes = { y: d.getFullYear(), m: d.getMonth() };
+  renderConteudoAgenda();
+}
+function irParaHojeAgenda() {
+  agendaMes = null; agendaDiaSel = hojeIso();
+  renderConteudoAgenda();
 }
 
 function renderAgendaLista(container) {
@@ -1614,16 +1806,22 @@ function formatarData(iso) {
   return `${d}/${m}/${y}`;
 }
 
-function abrirModalAgenda() {
+function abrirModalAgenda(dataIso) {
   const pacientes = db.ler(DB_KEYS.pacientes);
   if (!pacientes.length) { toast('Cadastre um paciente antes de agendar.', true); return; }
   const profissionais = db.ler(DB_KEYS.profissionais).filter(p => p.ativo);
   if (!profissionais.length) { toast('Cadastre um profissional em Administração antes de agendar.', true); return; }
   document.getElementById('agendaPaciente').innerHTML = pacientes.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
   document.getElementById('agendaProfissional').innerHTML = profissionais.filter(p => !ehProfissional() || p.nome === nomeProfissionalLogado()).map(p => `<option value="${p.nome}">${p.nome}</option>`).join('');
-  document.getElementById('agendaData').value = new Date().toISOString().slice(0,10);
-  document.getElementById('agendaHora').value = '09:00';
+  const d = document.getElementById('agendaData');
+  d.min = hojeIso();
+  d.value = (typeof dataIso === 'string' && dataIso >= hojeIso()) ? dataIso : hojeIso();
   document.getElementById('agendaObs').value = '';
+  atualizarHorariosAgenda();
+  // hoje sem horários livres: sugere o próximo dia
+  if (!document.getElementById('agendaHora').value) {
+    const n = new Date(); n.setDate(n.getDate() + 1); d.value = paraIso(n); atualizarHorariosAgenda();
+  }
   abrirModal('modalAgenda');
 }
 
@@ -1634,12 +1832,14 @@ function salvarAgendamento() {
   const profissional = document.getElementById('agendaProfissional').value;
   const obs = document.getElementById('agendaObs').value.trim();
 
-  if (!data || !hora) { toast('Preencha data e horário.', true); return; }
+  const motivo = motivoHorarioBloqueado(data, hora, profissional);
+  if (motivo) { toast(motivo, true); atualizarHorariosAgenda(); return; }
 
   const agenda = db.ler(DB_KEYS.agenda);
-  agenda.push({ id: db.uid(), pacienteId, profissional, data, hora, status: 'aguardando', obs });
+  agenda.push({ id: db.uid(), pacienteId, profissional, data, hora, duracaoMin: duracaoDoProfissional(profissional), status: 'aguardando', obs });
   db.salvar(DB_KEYS.agenda, agenda);
 
+  agendaDiaSel = data;
   fecharModal('modalAgenda');
   toast('Agendamento criado com sucesso.');
   renderizarPagina();
@@ -4342,6 +4542,7 @@ function abrirModalProfissional(id) {
   document.getElementById('profissionalRegistro').value = '';
   document.getElementById('profissionalTelefone').value = '';
   document.getElementById('profissionalCor').value = '#14B8A6';
+  preencherDuracoesProf(50);
   document.getElementById('profissionalLogo').value = '';
   document.getElementById('profissionalLogoImg').src = '';
   document.getElementById('profissionalLogoImg').dataset.base64 = '';
@@ -4357,6 +4558,7 @@ function abrirModalProfissional(id) {
       document.getElementById('profissionalRegistro').value       = p.registro      || '';
       document.getElementById('profissionalTelefone').value       = p.telefone      || '';
       document.getElementById('profissionalCor').value            = p.cor           || '#14B8A6';
+      preencherDuracoesProf(p.duracaoMin || 50);
 
       // Carrega logo já salva
       if (p.logo) {
@@ -4401,6 +4603,7 @@ function salvarProfissional() {
     registro:      document.getElementById('profissionalRegistro').value.trim(),
     telefone:      document.getElementById('profissionalTelefone').value.trim(),
     cor:           document.getElementById('profissionalCor').value,
+    duracaoMin:    Number(document.getElementById('profissionalDuracao').value) || 50,
     logo:          logoBase64,
   };
 
@@ -4807,7 +5010,7 @@ document.getElementById('mobileMenuBtn').addEventListener('click', () => {
 // -------------------- Versão --------------------
 // Regra: x.y.z — z sobe a cada modificação até 50; ao passar de 50, y sobe e z zera;
 // ao y chegar a 10, x sobe e y zera. Ex.: 1.0.50 -> 1.1.0 ; 1.9.50 -> 2.0.0
-const APP_VERSAO = '1.0.8';
+const APP_VERSAO = '1.0.9';
 // Rótulos das colunas para o modo celular (tabelas viram cartões)
 function rotularTabelas(){
   document.querySelectorAll('.table-card table').forEach(t=>{
