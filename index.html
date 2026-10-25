@@ -4737,7 +4737,7 @@ document.getElementById('mobileMenuBtn').addEventListener('click', () => {
 // -------------------- Versão --------------------
 // Regra: x.y.z — z sobe a cada modificação até 50; ao passar de 50, y sobe e z zera;
 // ao y chegar a 10, x sobe e y zera. Ex.: 1.0.50 -> 1.1.0 ; 1.9.50 -> 2.0.0
-const APP_VERSAO = '1.0.4';
+const APP_VERSAO = '1.0.5';
 document.querySelectorAll('.app-versao').forEach(el => el.textContent = APP_VERSAO);
 
 // -------------------- Servidor (Firebase) --------------------
@@ -4747,7 +4747,14 @@ document.querySelectorAll('.app-versao').forEach(el => el.textContent = APP_VERS
 // A proteção dos dados vem das regras de segurança (firestore.rules) e do login de cada usuário.
 // Exemplo:
 //   const FIREBASE_CONFIG_EMBUTIDA = { apiKey: 'AIza...', authDomain: 'meu-projeto.firebaseapp.com', projectId: 'meu-projeto', appId: '1:123:web:abc' };
-const FIREBASE_CONFIG_EMBUTIDA = null;
+const FIREBASE_CONFIG_EMBUTIDA = {
+  apiKey: "AIzaSyAtuyT2TAEmFcqT1tjw8Iuv6Bln5hyneSI",
+  authDomain: "cdgsis.firebaseapp.com",
+  projectId: "cdgsis",
+  storageBucket: "cdgsis.firebasestorage.app",
+  messagingSenderId: "904429643737",
+  appId: "1:904429643737:web:2730fe4f0ddffc0c391bc8"
+};
 const FB_VERSAO = '10.14.1';
 
 const REGRAS_FIRESTORE = String.raw`rules_version = '2';
