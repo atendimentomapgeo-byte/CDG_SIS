@@ -1,0 +1,96 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function logado() { return request.auth != null; }
+    function docUsuario() { return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data; }
+    function ativo() {
+      return logado()
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && docUsuario().ativo == true;
+    }
+    function perfil() { return docUsuario().perfil; }
+    function admin() { return ativo() && perfil() == 'Administrador'; }
+    function temPerfil(lista) { return ativo() && perfil() in lista; }
+    function dono() { return resource.data.ownerUid == request.auth.uid; }
+    function donoNovo() { return request.resource.data.ownerUid == request.auth.uid; }
+    function mantemDono() { return request.resource.data.ownerUid == resource.data.ownerUid; }
+    // lê tudo se o perfil estiver na lista; senão, só o que é seu
+    function leitura(lista) { return ativo() && (perfil() in lista || dono()); }
+
+    // ---- Usuários (cada um lê o próprio; administrador gerencia todos) ----
+    match /usuarios/{uid} {
+      allow read: if logado() && (request.auth.uid == uid || admin());
+      allow write: if admin();
+      // Primeiro acesso: o 1º administrador se cria junto com o marcador config/setup
+      allow create: if logado() && request.auth.uid == uid
+        && request.resource.data.perfil == 'Administrador'
+        && request.resource.data.ativo == true
+        && !exists(/databases/$(database)/documents/config/setup)
+        && existsAfter(/databases/$(database)/documents/config/setup);
+    }
+
+    // ---- Configurações da clínica ----
+    match /config/{id} {
+      // qualquer um pode saber se a clínica já foi configurada (só isso): esconde o "Primeiro acesso"
+      allow get: if id == 'setup';
+      allow read: if ativo();
+      allow write: if admin();
+      allow create: if id == 'setup' && logado()
+        && !exists(/databases/$(database)/documents/config/setup)
+        && existsAfter(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && getAfter(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.perfil == 'Administrador';
+    }
+
+    // ---- Cadastros da clínica (todos leem, só o administrador altera) ----
+    match /profissionais/{id} { allow read: if ativo(); allow write: if admin(); }
+    match /salas/{id}         { allow read: if ativo(); allow write: if admin(); }
+    match /convenios/{id}     { allow read: if ativo(); allow write: if admin(); }
+    match /servicos/{id}      { allow read: if ativo(); allow write: if admin(); }
+    match /whatsapp_templates/{id} { allow read: if ativo(); allow write: if admin(); }
+
+    // ---- Pacientes: cada profissional vê só os seus ----
+    match /pacientes/{id} {
+      allow read: if leitura(['Administrador', 'Recepção', 'Financeiro']);
+      allow create: if admin() || (temPerfil(['Profissional']) && donoNovo());
+      allow update: if admin() || (temPerfil(['Profissional']) && dono() && mantemDono());
+      allow delete: if admin() || (temPerfil(['Profissional']) && dono());
+    }
+
+    // ---- Agenda: profissional vê a própria; recepção marca para qualquer profissional ----
+    match /agenda/{id} {
+      allow read: if leitura(['Administrador', 'Recepção', 'Financeiro']);
+      allow create: if temPerfil(['Administrador', 'Recepção']) || (temPerfil(['Profissional']) && donoNovo());
+      allow update: if temPerfil(['Administrador', 'Recepção']) || (temPerfil(['Profissional']) && dono() && mantemDono());
+      allow delete: if temPerfil(['Administrador', 'Recepção']) || (temPerfil(['Profissional']) && dono());
+    }
+
+    // ---- Dados clínicos: só o profissional dono e o administrador ----
+    match /prontuarios/{id}   { allow read: if leitura(['Administrador']); allow create: if admin() || (temPerfil(['Profissional']) && donoNovo()); allow update: if admin() || (temPerfil(['Profissional']) && dono() && mantemDono()); allow delete: if admin() || (temPerfil(['Profissional']) && dono()); }
+    match /evolucoes/{id}     { allow read: if leitura(['Administrador']); allow create: if admin() || (temPerfil(['Profissional']) && donoNovo()); allow update: if admin() || (temPerfil(['Profissional']) && dono() && mantemDono()); allow delete: if admin() || (temPerfil(['Profissional']) && dono()); }
+    match /escalas/{id}       { allow read: if leitura(['Administrador']); allow create: if admin() || (temPerfil(['Profissional']) && donoNovo()); allow update: if admin() || (temPerfil(['Profissional']) && dono() && mantemDono()); allow delete: if admin() || (temPerfil(['Profissional']) && dono()); }
+    match /especialidades/{id} { allow read: if leitura(['Administrador']); allow create: if admin() || (temPerfil(['Profissional']) && donoNovo()); allow update: if admin() || (temPerfil(['Profissional']) && dono() && mantemDono()); allow delete: if admin() || (temPerfil(['Profissional']) && dono()); }
+
+    // ---- Documentos gerados ----
+    match /documentos/{id} {
+      allow read: if leitura(['Administrador']);
+      allow create: if admin() || (ativo() && donoNovo());
+      allow update: if admin() || (ativo() && dono() && mantemDono());
+      allow delete: if admin() || (ativo() && dono());
+    }
+
+    // ---- Financeiro ----
+    match /lancamentos/{id} {
+      allow read: if leitura(['Administrador', 'Financeiro']);
+      allow create: if temPerfil(['Administrador', 'Financeiro']) || (temPerfil(['Profissional']) && donoNovo());
+      allow update: if temPerfil(['Administrador', 'Financeiro']) || (temPerfil(['Profissional']) && dono() && mantemDono());
+      allow delete: if temPerfil(['Administrador', 'Financeiro']) || (temPerfil(['Profissional']) && dono());
+    }
+    match /pacotes/{id} {
+      allow read: if leitura(['Administrador', 'Financeiro']);
+      allow create: if temPerfil(['Administrador', 'Financeiro']) || (temPerfil(['Profissional']) && donoNovo());
+      allow update: if temPerfil(['Administrador', 'Financeiro']) || (temPerfil(['Profissional']) && dono() && mantemDono());
+      allow delete: if temPerfil(['Administrador', 'Financeiro']) || (temPerfil(['Profissional']) && dono());
+    }
+  }
+}
