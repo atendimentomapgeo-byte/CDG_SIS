@@ -510,7 +510,9 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
 
 
 /* ---- Agenda geral (mês) ---- */
-.cm-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; max-width: 520px; margin-bottom: 16px; }
+.cm-layout { display: grid; grid-template-columns: minmax(360px, 480px) 1fr; gap: 16px; align-items: start; }
+.cm-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+@media (max-width: 980px) { .cm-layout { grid-template-columns: 1fr; } }
 .cm-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .cm-titulo { font-weight: 700; font-size: 15px; }
 .cm-titulo::first-letter, .cm-dt::first-letter { text-transform: uppercase; }
@@ -522,18 +524,22 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
 .cm-dia.fora { opacity: .35; }
 .cm-dia.passado { opacity: .5; }
 .cm-dia.passado.fora { opacity: .25; }
-.cm-num { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 14px; position: relative; border: 2px solid transparent; }
+.cm-num { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 14px; position: relative; border: 2px solid transparent; }
 .cm-dia.sel .cm-num { border-color: var(--text-muted); border-radius: 10px; }
 .cm-num.hoje { background: var(--primary); color: #fff; border-radius: 50%; font-weight: 700; }
 .cm-dia.sel .cm-num.hoje { border-color: var(--text); border-radius: 50%; }
-.cm-num.tem { background: var(--primary-tint); color: var(--primary); border: 2px solid var(--primary); border-radius: 8px; font-weight: 700; }
-.cm-num.tem-passado::after, .cm-num.hoje-tem::after { content: ''; position: absolute; bottom: 3px; width: 5px; height: 5px; background: var(--primary); border-radius: 1px; }
+.cm-num { --pc: var(--primary); }
+.cm-num.tem { background: color-mix(in srgb, var(--pc) 20%, transparent); color: var(--text); border: 2px solid var(--pc); border-radius: 8px; font-weight: 700; }
+.cm-pts { position: absolute; bottom: 2px; display: flex; gap: 2px; }
+.cm-pts i { width: 5px; height: 5px; border-radius: 1px; display: block; }
+.cm-num.tem-passado::after, .cm-num.hoje-tem::after { content: ''; position: absolute; bottom: 3px; width: 5px; height: 5px; background: var(--pc); border-radius: 1px; }
 .cm-num.hoje-tem::after { background: #fff; }
 .cm-legenda { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: var(--text-muted); }
 .cm-legenda span { display: inline-flex; align-items: center; gap: 6px; }
 .cm-ex { width: 14px; height: 14px; display: inline-block; }
 .cm-ex.hoje { background: var(--primary); border-radius: 50%; }
 .cm-ex.tem { border: 2px solid var(--primary); background: var(--primary-tint); border-radius: 3px; }
+.cm-legenda .cm-cor { font-style: normal; }
 .cm-painel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 .cm-painel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-bottom: 1px solid var(--border); }
 .cm-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
@@ -541,7 +547,47 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
 .cm-hora { font-weight: 700; min-width: 52px; font-size: 14px; }
 .cm-hora small { display: block; font-weight: 400; font-size: 10.5px; color: var(--text-muted); }
 .cm-info { flex: 1; min-width: 140px; }
-@media (max-width: 640px) { .cm-wrap { max-width: 100%; padding: 10px; } .cm-num { width: 36px; height: 36px; } .cm-item .row-actions { width: 100%; } }
+@media (max-width: 640px) { .cm-wrap { padding: 10px; } .cm-num { width: 36px; height: 36px; } .cm-item .row-actions { width: 100%; } }
+
+/* ---- Fichas (preenchimento) ---- */
+.fk-doc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; max-width: 1000px; }
+.fk-cab { margin-bottom: 10px; }
+.fk-titulo { margin: 0; font-size: 18px; }
+.fk-aval .fk-cab { text-align: center; } .fk-aval .fk-titulo { color: var(--primary); }
+.fk-sub { color: var(--text-muted); font-style: italic; font-size: 13px; margin-top: 2px; }
+.fk-evol .fk-sub { font-style: normal; font-weight: 700; color: var(--text); font-size: 15px; margin-top: 10px; }
+.fk-sec { font-size: 13px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: .03em; margin: 22px 0 8px; }
+.fk-nota { font-size: 12px; color: var(--text-muted); margin: 0 0 8px; }
+.fk-tab { width: 100%; border-collapse: collapse; margin: 4px 0 8px; }
+.fk-tab th { background: var(--surface-2); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); text-align: left; padding: 8px 10px; border: 1px solid var(--border); }
+.fk-tab td { border: 1px solid var(--border); padding: 8px 10px; vertical-align: top; font-size: 13px; }
+.fk-tab tbody tr:hover { background: transparent; }
+.fk-rot { font-weight: 600; width: 28%; }
+.fk-c { text-align: center; width: 90px; }
+.fk-line { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin: 8px 0; }
+.fk-br { flex-basis: 100%; height: 0; }
+.fk-lit { font-size: 13px; }
+.fk-opt { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+.fk-opt input, .fk-c input { width: 18px; height: 18px; accent-color: var(--primary); }
+.fk-in { flex: 1 1 120px; min-width: 90px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 7px 9px; font: inherit; font-size: 13px; }
+.fk-in.fk-tn { flex: 0 1 90px; min-width: 64px; }
+.fk-in.fk-td { flex: 0 1 150px; }
+.fk-ta { flex: 1 1 100%; min-height: 60px; resize: vertical; }
+.fk-add { margin-top: 4px; }
+.fk-rodape { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 22px; }
+.fk-prof { margin: 2px 0; }
+@media (max-width: 640px) {
+  .fk-doc { padding: 12px; }
+  .fk-in, .fk-ta { font-size: 16px; }
+  .fk-tab, .fk-tab tbody, .fk-tab tr, .fk-tab td { display: block; width: 100%; }
+  .fk-tab thead { display: none; }
+  .fk-tab tr { border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 8px; }
+  .fk-tab td { border: none; padding: 4px 0; text-align: left; }
+  .fk-tab td.fk-c { display: inline-flex; width: auto; align-items: center; gap: 6px; margin-right: 14px; }
+  .fk-tab td.fk-c::before { content: attr(data-label); font-size: 12px; }
+  .fk-tab td:not(.fk-rot):not(.fk-c)[data-label]::before { content: attr(data-label); display: block; font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); }
+  .fk-rot { width: 100%; }
+}
 </style>
 </head>
 <body data-theme="dark" data-density="compact">
@@ -691,6 +737,21 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
     <div class="modal-box-foot">
       <button class="btn btn-ghost" onclick="fecharModal('modalAgenda')">Cancelar</button>
       <button class="btn btn-primary" onclick="salvarAgendamento()"><i class="bi bi-check2"></i> Agendar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop-custom" id="modalNovaFicha">
+  <div class="modal-box">
+    <div class="modal-box-head"><h3>Nova ficha</h3><button class="icon-btn" onclick="fecharModal('modalNovaFicha')"><i class="bi bi-x-lg"></i></button></div>
+    <div class="modal-box-body">
+      <div class="field"><label>Paciente</label><select id="novaFichaPac"></select></div>
+      <div class="field"><label>Modelo de ficha</label><select id="novaFichaModelo"></select></div>
+      <div class="field"><label>Profissional</label><select id="novaFichaProf"></select></div>
+    </div>
+    <div class="modal-box-foot">
+      <button class="btn btn-ghost" onclick="fecharModal('modalNovaFicha')">Cancelar</button>
+      <button class="btn btn-primary" onclick="criarFicha()"><i class="bi bi-file-earmark-plus"></i> Abrir ficha</button>
     </div>
   </div>
 </div>
@@ -1101,7 +1162,7 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
    ========================================================================= */
 
 const DB_KEYS = {
-  pacientes: 'erp_pacientes', agenda: 'erp_agenda', prontuarios: 'erp_prontuarios', evolucoes: 'erp_evolucoes',
+  pacientes: 'erp_pacientes', agenda: 'erp_agenda', fichas: 'erp_fichas', prontuarios: 'erp_prontuarios', evolucoes: 'erp_evolucoes',
   profissionais: 'erp_profissionais', salas: 'erp_salas', convenios: 'erp_convenios',
   servicos: 'erp_servicos', usuarios: 'erp_usuarios',
   lancamentos: 'erp_lancamentos', pacotes: 'erp_pacotes', documentos: 'erp_documentos',
@@ -1128,7 +1189,7 @@ function escopoLeitura(chave, perfil) {
   if (CHAVES_COMPARTILHADAS.includes(chave)) return 'tudo';
   if (chave === DB_KEYS.usuarios) return admin ? 'tudo' : null;
   if (chave === DB_KEYS.pacientes || chave === DB_KEYS.agenda) return ['Administrador', 'Recepção', 'Financeiro'].includes(perfil) ? 'tudo' : 'meus';
-  if ([DB_KEYS.prontuarios, DB_KEYS.evolucoes, DB_KEYS.escalas, DB_KEYS.especialidades].includes(chave)) {
+  if ([DB_KEYS.prontuarios, DB_KEYS.evolucoes, DB_KEYS.escalas, DB_KEYS.especialidades, DB_KEYS.fichas].includes(chave)) {
     return admin ? 'tudo' : (perfil === 'Profissional' ? 'meus' : null);
   }
   if (chave === DB_KEYS.documentos) return admin ? 'tudo' : 'meus';
@@ -1216,6 +1277,7 @@ function agendarRerender() {
   rerenderTimer = setTimeout(() => {
     if (!usuarioLogado) return;
     if (document.querySelector('.modal-backdrop-custom.show')) return;
+    if (typeof fichaAberta !== 'undefined' && fichaAberta) return;
     const a = document.activeElement;
     if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
     renderizarPagina();
@@ -1283,6 +1345,7 @@ const MODULOS = [
     { id: 'pacientes', label: 'Pacientes', icone: 'bi-people' },
     { id: 'prontuario', label: 'Prontuário', icone: 'bi-clipboard2-pulse' },
     { id: 'evolucao', label: 'Evolução', icone: 'bi-graph-up-arrow' },
+    { id: 'fichas', label: 'Fichas', icone: 'bi-file-earmark-medical' },
     { id: 'escalas', label: 'Escalas', icone: 'bi-rulers' },
     { id: 'especialidades', label: 'Especialidades', icone: 'bi-heart-pulse' },
   ]},
@@ -1328,6 +1391,7 @@ function irPara(id) {
 function navegar(id) {
   // Clique vindo da sidebar sempre reseta subtelas internas
   if (id === 'prontuario') { prontuarioView = 'lista'; prontuarioPacienteId = null; prontuarioAbaAtiva = 'anamnese'; }
+  if (id === 'fichas') { fichaAberta = null; fichasFiltroPac = ''; }
   if (id === 'administracao') { administracaoAbaAtiva = 'profissionais'; }
   if (id === 'financeiro') { financeiroAbaAtiva = 'visao-geral'; }
   if (id === 'whatsapp') { whatsappAbaAtiva = 'enviar'; whatsappPacientePreSelecionado = null; }
@@ -1358,6 +1422,7 @@ function renderizarPagina() {
   if (paginaAtual === 'pacientes') return renderPacientes(root);
   if (paginaAtual === 'prontuario') return renderProntuario(root);
   if (paginaAtual === 'evolucao') return renderEvolucaoListaPage(root);
+  if (paginaAtual === 'fichas') return renderFichas(root);
   if (paginaAtual === 'administracao') return renderAdministracao(root);
   if (paginaAtual === 'financeiro') return renderFinanceiro(root);
   if (paginaAtual === 'documentos') return renderDocumentos(root);
@@ -1585,8 +1650,15 @@ function renderAgendaMes(container) {
   const { y, m } = agendaMes;
   const primeiro = new Date(y, m, 1);
   const inicio = new Date(y, m, 1 - primeiro.getDay());
-  const porDia = {};
-  agenda.forEach(a => { porDia[a.data] = (porDia[a.data] || 0) + 1; });
+  const porDia = {}, coresDia = {};
+  const profsCor = db.ler(DB_KEYS.profissionais);
+  agenda.forEach(a => {
+    porDia[a.data] = (porDia[a.data] || 0) + 1;
+    const pf = profsCor.find(x => x.nome === a.profissional);
+    const cor = (pf && pf.cor) || '#14B8A6';
+    (coresDia[a.data] = coresDia[a.data] || []);
+    if (!coresDia[a.data].includes(cor)) coresDia[a.data].push(cor);
+  });
   const titulo = primeiro.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
   let cel = '';
   for (let i = 0; i < 42; i++) {
@@ -1597,9 +1669,10 @@ function renderAgendaMes(container) {
     const ehHoje = iso === hoje;
     const tem = !!porDia[iso];
     const cls = ['cm-num', ehHoje ? 'hoje' : '', (tem && iso > hoje) ? 'tem' : '', (tem && passado) ? 'tem-passado' : '', (tem && ehHoje) ? 'hoje-tem' : ''].join(' ');
-    cel += `<button type="button" class="cm-dia ${fora ? 'fora' : ''} ${passado ? 'passado' : ''} ${iso === agendaDiaSel ? 'sel' : ''}" onclick="selecionarDiaAgenda('${iso}')" title="${tem ? porDia[iso] + ' agendamento(s)' : ''}"><span class="${cls}">${d.getDate()}</span></button>`;
+    cel += `<button type="button" class="cm-dia ${fora ? 'fora' : ''} ${passado ? 'passado' : ''} ${iso === agendaDiaSel ? 'sel' : ''}" onclick="selecionarDiaAgenda('${iso}')" title="${tem ? porDia[iso] + ' agendamento(s)' : ''}"><span class="${cls}" ${tem ? `style="--pc:${coresDia[iso][0]}"` : ''}>${d.getDate()}${tem && coresDia[iso].length > 1 ? `<span class="cm-pts">${coresDia[iso].slice(0, 4).map(c => `<i style="background:${c}"></i>`).join('')}</span>` : ''}</span></button>`;
   }
   container.innerHTML = `
+    <div class="cm-layout">
     <div class="cm-wrap">
       <div class="cm-head">
         <div class="cm-titulo">${titulo}</div>
@@ -1613,10 +1686,11 @@ function renderAgendaMes(container) {
       <div class="cm-grid">${cel}</div>
       <div class="cm-legenda">
         <span><i class="cm-ex hoje"></i> Hoje</span>
-        <span><i class="cm-ex tem"></i> Com agendamento</span>
+        <span><i class="cm-ex tem"></i> Com agendamento (cor do profissional)</span>
       </div>
     </div>
-    <div id="agendaDiaPainel"></div>`;
+    <div id="agendaDiaPainel"></div>
+    </div>`;
   renderPainelDiaAgenda();
 }
 
@@ -1878,6 +1952,7 @@ function renderPacientes(root) {
       linhas += '<td><div class="row-actions">';
       linhas += '<button title="Prontuário" onclick="abrirProntuarioDoPaciente(\'' + p.id + '\')"><i class="bi bi-clipboard2-pulse"></i></button>';
       linhas += '<button title="Evoluções" onclick="abrirEvolucaoDoPaciente(\'' + p.id + '\')"><i class="bi bi-graph-up-arrow"></i></button>';
+      if (podeAcessar('fichas')) linhas += '<button title="Fichas" onclick="irParaFichas(\'' + p.id + '\')"><i class="bi bi-file-earmark-medical"></i></button>';
       linhas += '<button title="Escalas" onclick="abrirEscalasDoPaciente(\'' + p.id + '\')"><i class="bi bi-rulers"></i></button>';
       linhas += '<button title="Especialidades" onclick="abrirEspecialidadesDoPaciente(\'' + p.id + '\')"><i class="bi bi-heart-pulse"></i></button>';
       linhas += '<button title="WhatsApp" onclick="enviarWhatsappParaPaciente(\'' + p.id + '\')"><i class="bi bi-whatsapp"></i></button>';
@@ -5007,10 +5082,586 @@ document.getElementById('mobileMenuBtn').addEventListener('click', () => {
 });
 
 
+
+// -------------------- FICHAS (modelos da clínica) --------------------
+// Minilinguagem dos campos (usada no preenchimento E na impressão):
+//   []Texto  caixa de marcar    ()Texto  escolha única (grupo = o mesmo trecho)
+//   __ texto   __a área de texto   __d data   __n número   __s linha de assinatura
+//   __=pac.nome  preenche sozinho (pac.nome pac.nasc pac.idade pac.tel prof.nome prof.reg hoje sessao)
+//   \n  quebra de linha
+const FICHA_RODAPE = 'Prontuário fisioterapêutico — registrar apenas dados avaliados e condutas realizadas';
+const IDENT_AV = [
+  ['Nome completo', '__=pac.nome'],
+  ['Data de nascimento / idade', '__d=pac.nasc / __n=pac.idade anos'],
+];
+const FICHAS = {
+  aval_ortopedica: {
+    nome: 'Avaliação Fisioterapêutica Ortopédica', grupo: 'Avaliação', estilo: 'aval',
+    titulo: 'FICHA COMPLETA DE AVALIAÇÃO FISIOTERAPÊUTICA ORTOPÉDICA',
+    sub: 'Avaliação musculoesquelética • Clínica • Uso profissional',
+    topo: ['Fisioterapeuta: __=prof.nome CREFITO: __=prof.reg', 'Data: __d=hoje Nº prontuário: __ ()Avaliação inicial ()Reavaliação'],
+    secoes: [
+      { t: '1. IDENTIFICAÇÃO DO PACIENTE', tipo: 'campos', cab: ['Campo', 'Preenchimento'], rows: [
+        ...IDENT_AV,
+        ['Telefone / contato de emergência', '__=pac.tel'],
+        ['Profissão / atividade ocupacional', '__'],
+        ['Dominância', '()Destra ()Canhota ()Ambidestra'],
+        ['Prática de atividade física', '()Não ()Sim: __ Frequência: __'],
+        ['Encaminhamento / médico (se houver)', '__'],
+        ['Diagnóstico médico / hipótese', '__'] ] },
+      { t: '2. QUEIXA PRINCIPAL E HISTÓRIA ATUAL', tipo: 'campos', cab: ['Item', 'Registro'], rows: [
+        ['Queixa principal', '__a'],
+        ['Local da queixa', '[]Cervical []Torácica []Lombar []Ombro []Cotovelo []Punho/mão []Quadril []Joelho []Tornozelo/pé []Outra: __'],
+        ['Início dos sintomas', '()Súbito ()Gradual ()Pós-trauma ()Pós-cirúrgico Data: __d'],
+        ['Mecanismo / circunstância', '__a'],
+        ['Evolução', '()Melhorando ()Estável ()Piorando ()Recorrente'],
+        ['Fatores que agravam', '__a'], ['Fatores que aliviam', '__a'],
+        ['Tratamentos anteriores e resposta', '__a'], ['Exames complementares / laudos', '__a'] ] },
+      { t: '3. HISTÓRICO CLÍNICO E COMORBIDADES', tipo: 'radio', cab: ['Condição', 'Detalhes'], opc: ['Não', 'Sim'], rows: [
+        'Hipertensão / doença cardiovascular', 'Diabetes', 'Osteoporose / osteopenia', 'Artrite / doença reumatológica',
+        'Câncer atual/prévio', 'Alteração neurológica / perda de sensibilidade', 'Cirurgias / fraturas anteriores',
+        'Uso de anticoagulante / corticoide', 'Alergias / outras condições'],
+        depois: ['Medicamentos em uso: __a', 'Precauções, restrições médicas ou orientações pós-operatórias: __a'] },
+      { t: '4. TRIAGEM DE SINAIS DE ALERTA', nota: 'Investigar antes de testes ou técnicas. Se houver suspeita de condição grave, interromper a avaliação e encaminhar para avaliação médica/urgente conforme gravidade.',
+        tipo: 'radio', cab: ['Sinal/sintoma', 'Descrição / conduta'], opc: ['Não', 'Sim'], rows: [
+        'Trauma importante, deformidade ou incapacidade súbita de apoiar', 'Dor intensa e progressiva, especialmente em repouso/noite',
+        'Febre, calor/vermelhidão importante ou suspeita de infecção', 'Perda de força progressiva ou déficit neurológico novo',
+        'Alteração de controle urinário/fecal ou anestesia em sela (urgência)', 'Edema súbito, calor/dor na panturrilha ou falta de ar/dor torácica',
+        'Histórico de câncer, perda de peso inexplicada ou mal-estar sistêmico'],
+        depois: ['Triagem: ()Sem sinais identificados ()Avaliação interrompida ()Encaminhamento realizado', 'Detalhes do encaminhamento: __'] },
+      { t: '5. AVALIAÇÃO DA DOR', tipo: 'campos', cab: ['Parâmetro', 'Registro'], rows: [
+        ['Escala numérica (0–10)', 'Atual: __n Mínima: __n Máxima: __n'],
+        ['Tipo de dor', '[]Mecânica []Queimação []Pontada []Choque []Peso []Outra: __'],
+        ['Frequência/duração', '()Constante ()Intermitente Duração: __'],
+        ['Irradiação', '()Não ()Sim, para: __'],
+        ['Sintomas associados', '[]Formigamento []Dormência []Fraqueza []Edema []Rigidez'],
+        ['Impacto funcional', '__a'] ] },
+      { t: '6. EXAME FÍSICO — INSPEÇÃO E PALPAÇÃO', tipo: 'campos', cab: ['Item', 'Achados / descrição'], rows: [
+        ['Inspeção estática e dinâmica', '__a'], ['Edema / derrame / hematoma', '__a'], ['Temperatura / coloração da pele', '__a'],
+        ['Cicatriz / aderência (se houver)', '__a'], ['Alinhamento / deformidade aparente', '__a'],
+        ['Palpação: dor, tensão, pontos sensíveis', '__a'], ['Integridade cutânea / sinais inflamatórios', '__a'] ],
+        depois: ['Região avaliada: __ Lado: ()Direito ()Esquerdo ()Bilateral'] },
+      { t: '7. AMPLITUDE DE MOVIMENTO (ADM)', nota: 'Registrar amplitude ativa e passiva quando indicada, dor, compensações e sensação terminal. Utilizar goniometria quando pertinente.',
+        tipo: 'livre', cab: ['Movimento / articulação', 'ADM ativa', 'ADM passiva', 'Dor / observações'], n: 5 },
+      { t: '8. FORÇA MUSCULAR', nota: 'Escala MRC (quando aplicável): 0 = sem contração; 1 = contração sem movimento; 2 = movimento sem gravidade; 3 = contra gravidade; 4 = contra resistência; 5 = força esperada.',
+        tipo: 'livre', cab: ['Grupo muscular / movimento', 'Direito (0–5)', 'Esquerdo (0–5)', 'Dor / observações'], n: 5 },
+      { t: '9. EXAME NEUROLÓGICO (SE INDICADO)', tipo: 'matriz', cab: ['Item', 'Direito', 'Esquerdo', 'Observações'], rows: [
+        ['Sensibilidade superficial', '()Preservada ()Alterada', '()Preservada ()Alterada', '__'],
+        ['Sensibilidade profunda/propriocepção', '()Preservada ()Alterada', '()Preservada ()Alterada', '__'],
+        ['Reflexos (se indicados)', '__', '__', '__'], ['Miotomos / força segmentar', '__', '__', '__'],
+        ['Dermátomos / distribuição sensitiva', '__', '__', '__'], ['Testes neurodinâmicos (se indicados)', '__', '__', '__'] ],
+        depois: ['Observações neurológicas: __a'] },
+      { t: '10. AVALIAÇÃO FUNCIONAL', tipo: 'radio', cab: ['Atividade', 'Observações'], opc: ['Independente', 'Com dificuldade', 'Dependente / não testado'], rows: [
+        'Marcha', 'Sentar e levantar', 'Subir/descer escadas', 'Agachar / alcançar objetos', 'Vestir-se / higiene / AVDs', 'Trabalho / esporte / lazer'],
+        depois: ['Dispositivo auxiliar: ()Nenhum ()Bengala ()Muletas ()Andador ()Órtese ()Outro: __',
+          'Testes funcionais padronizados aplicados (se indicados): __a', 'Resultado / interpretação: __a'] },
+      { t: '11. AVALIAÇÃO POSTURAL E MOVIMENTO', tipo: 'campos', cab: ['Aspecto', 'Observação'], rows: [
+        ['Alinhamento global / assimetrias', '__a'], ['Postura sentada e em pé', '__a'], ['Padrão de movimento / compensações', '__a'],
+        ['Controle motor / estabilidade', '__a'], ['Equilíbrio / risco de queda', '__a'], ['Ergonomia no trabalho e tarefas diárias', '__a'] ] },
+      { t: '12. TESTES ESPECIAIS', nota: 'Selecionar apenas testes apropriados à hipótese clínica, após triagem e consentimento. Registrar nome, lado, resultado e reprodução dos sintomas.',
+        tipo: 'livre', cab: ['Teste', 'Região/lado', 'Resultado (+/−/inconclusivo)', 'Resposta / observações'], n: 4,
+        depois: ['Testes não realizados e motivo: __a'] },
+      { t: '13. MEDIDAS E DESFECHOS', tipo: 'matriz', cab: ['Medida', 'Resultado inicial', 'Unidade / escala', 'Data'], rows: [
+        ['Circunferência / edema (se pertinente)', '__', '__', '__d'], ['Goniometria / medida específica', '__', '__', '__d'],
+        ['Escala funcional / questionário validado', '__', '__', '__d'], ['Outra medida objetiva', '__', '__', '__d'] ] },
+      { t: '14. SÍNTESE E DIAGNÓSTICO FISIOTERAPÊUTICO', tipo: 'linhas', rows: [
+        'Principais achados objetivos:\n__a', 'Deficiências / alterações de estrutura e função:\n__a', 'Limitações de atividade:\n__a',
+        'Restrições de participação / fatores contextuais:\n__a', 'Diagnóstico fisioterapêutico funcional:\n__a',
+        'Prognóstico e fatores que podem influenciar a recuperação:\n__a'] },
+      { t: '15. OBJETIVOS TERAPÊUTICOS', tipo: 'linhas', rows: [
+        '[]Reduzir dor e edema, quando presentes', '[]Recuperar/manter amplitude de movimento', '[]Melhorar força, resistência e controle motor',
+        '[]Melhorar mobilidade, equilíbrio e marcha', '[]Retomar atividades de vida diária, trabalho, esporte ou lazer',
+        '[]Melhorar tolerância à carga e capacidade funcional', '[]Educar sobre ergonomia, autocuidado e prevenção de recorrências',
+        'Objetivos individualizados e prazo estimado:\n__a'] },
+      { t: '16. PLANO TERAPÊUTICO E CONDUTA', tipo: 'matriz', cab: ['Intervenção', 'Parâmetros / frequência individualizada', 'Resposta / observações'], rows: [
+        ['Educação e orientações', '__a', '__a'], ['Exercícios de mobilidade / flexibilidade', '__a', '__a'], ['Fortalecimento / resistência', '__a', '__a'],
+        ['Treino funcional / equilíbrio / marcha', '__a', '__a'], ['Terapia manual (se indicada)', '__a', '__a'],
+        ['Recursos físicos (se indicados)', '__a', '__a'], ['Programa domiciliar', '__a', '__a'] ],
+        depois: ['Frequência proposta: __n sessões/semana Reavaliação em: __d', 'Precauções / contraindicações / critérios de progressão: __a'] },
+      { t: '17. EVOLUÇÃO E REAVALIAÇÃO', tipo: 'livre', cab: ['Data|d', 'Dor (0–10)|n', 'Achados/medidas', 'Intervenção e resposta', 'Plano / progressão'], n: 4 },
+      { t: '18. ORIENTAÇÕES E CONSENTIMENTO', nota: 'O paciente foi informado sobre os objetivos e procedimentos propostos, teve oportunidade de esclarecer dúvidas e compreende que pode comunicar desconforto ou solicitar pausa/interrupção.',
+        tipo: 'linhas', rows: ['Paciente/responsável: __=pac.nome Assinatura: __s', 'Fisioterapeuta: __=prof.nome CREFITO: __=prof.reg Assinatura: __s',
+          'Data: __d=hoje', 'Observações adicionais:\n__a'] },
+    ], rodape: true,
+  },
+
+  aval_gestante: {
+    nome: 'Avaliação Fisioterapêutica da Gestante', grupo: 'Avaliação', estilo: 'aval',
+    titulo: 'FICHA COMPLETA DE AVALIAÇÃO FISIOTERAPÊUTICA DA GESTANTE',
+    sub: 'Saúde da mulher • Pré-natal fisioterapêutico • Uso clínico',
+    topo: ['Fisioterapeuta: __=prof.nome CREFITO: __=prof.reg', 'Data da avaliação: __d=hoje Nº do prontuário: __ ()Primeira avaliação ()Reavaliação'],
+    secoes: [
+      { t: '1. IDENTIFICAÇÃO', tipo: 'campos', cab: ['Dados', 'Preencher'], rows: [
+        ...IDENT_AV,
+        ['Telefone', '__=pac.tel Contato de emergência: __'], ['Profissão / rotina de trabalho', '__'], ['Endereço', '__'],
+        ['Obstetra / serviço de pré-natal', '__ Telefone: __'], ['Pessoa acompanhante (se desejar)', '__'] ] },
+      { t: '2. HISTÓRIA OBSTÉTRICA ATUAL', tipo: 'campos', cab: ['Item', 'Registro'], rows: [
+        ['Idade gestacional hoje', '__n semanas + __n dias'], ['Data provável do parto (DPP)', '__d'],
+        ['Gestação', '()Única ()Gemelar ()Outra: __'],
+        ['Classificação/risco informado no pré-natal', '()Habitual ()Alto risco ()Não sabe Motivo: __'],
+        ['Acompanhamento pré-natal', '()Regular ()Irregular ()Ainda não iniciou'],
+        ['Liberação/orientações obstétricas para exercício', '()Sim ()Não ()Não verificado Detalhes: __'],
+        ['Queixa principal / motivo da consulta', '__a'], ['Expectativas e objetivos da gestante', '__a'] ] },
+      { t: '3. HISTÓRICO GINECOLÓGICO E OBSTÉTRICO', tipo: 'campos', cab: ['Histórico', 'Registro'], rows: [
+        ['Gestações / partos / abortamentos', 'G: __n P: __n A: __n'],
+        ['Partos anteriores', '[]Vaginal []Cesárea []Instrumental []Não se aplica'],
+        ['Complicações em gestações/partos anteriores', '()Não ()Sim: __'],
+        ['Histórico de prematuridade / perda gestacional', '()Não ()Sim: __'],
+        ['Cirurgias ginecológicas/abdominais', '()Não ()Sim: __'],
+        ['Histórico de dor pélvica / endometriose / prolapsos', '()Não ()Sim: __'],
+        ['Histórico de incontinência urinária/fecal', '()Não ()Sim: __'] ] },
+      { t: '4. HISTÓRICO MÉDICO E FATORES DE RISCO', nota: 'Marque se presente e detalhe quando necessário:', tipo: 'radio', cab: ['Condição', 'Detalhes / controle'], opc: ['Não', 'Sim'], rows: [
+        'Hipertensão / pré-eclâmpsia', 'Diabetes / diabetes gestacional', 'Cardiopatia / doença vascular', 'Doença respiratória (asma etc.)',
+        'Anemia / alteração hematológica', 'Alterações da tireoide', 'Trombose / risco tromboembólico', 'Doença renal / neurológica',
+        'Dor musculoesquelética prévia', 'Outras condições / alergias'],
+        depois: ['Medicamentos e suplementos em uso: __a', 'Alergias: __ Restrições/orientações médicas: __'] },
+      { t: '5. TRIAGEM DE SINAIS DE ALERTA — ANTES DA AVALIAÇÃO', nota: 'Hoje ou recentemente apresenta algum dos sinais abaixo? Se sim, não iniciar/continuar os testes e providenciar avaliação obstétrica conforme urgência.',
+        tipo: 'radio', cab: ['Sinal de alerta', 'Observações / conduta'], opc: ['Não', 'Sim'], rows: [
+        'Sangramento vaginal', 'Perda de líquido vaginal suspeita', 'Contrações dolorosas regulares / dor abdominal intensa',
+        'Dor torácica, falta de ar em repouso ou desmaio', 'Cefaleia intensa, alteração visual ou dor epigástrica importante',
+        'Dor/inchaço unilateral de panturrilha', 'Febre / mal-estar importante', 'Redução perceptível dos movimentos fetais (quando já habituais)'],
+        depois: ['Triagem concluída: ()Sem sinais relatados ()Avaliação interrompida/adiada Encaminhamento/contato: __'] },
+      { t: '6. SINAIS VITAIS E MEDIDAS', tipo: 'matriz', cab: ['Parâmetro', 'Valor', 'Observações'], rows: [
+        ['Pressão arterial', '__n / __n mmHg', '__'], ['Frequência cardíaca', '__n bpm', '__'], ['Frequência respiratória', '__n irpm', '__'],
+        ['SpO₂ (se indicada)', '__n %', '__'], ['Peso atual (se pertinente)', '__n kg', '__'], ['Altura (se pertinente)', '__n m', '__'] ] },
+      { t: '7. AVALIAÇÃO DA DOR E SINTOMAS', tipo: 'campos', cab: ['Item', 'Registro'], rows: [
+        ['Localização', '[]Cervical []Torácica []Lombar []Sacroilíaca []Pubiana []Quadril []Outra: __'],
+        ['Intensidade (0–10)', 'Atual: __n Mínima: __n Máxima: __n'], ['Início / duração / frequência', '__a'],
+        ['Piora com', '[]Caminhar []Escadas []Virar na cama []Ficar em pé []Sentar []Outro: __'], ['Alívio com', '__a'],
+        ['Irradiação / formigamento / fraqueza', '__a'], ['Impacto no sono e nas AVDs', '__a'] ] },
+      { t: '8. AVALIAÇÃO FÍSICA — POSTURA', tipo: 'radio', cab: ['Observação', 'Descrição'], opc: ['Ausente', 'Presente'], rows: [
+        'Anteriorização da cabeça', 'Ombros protraídos / assimetria', 'Alteração da cifose torácica', 'Aumento da lordose lombar',
+        'Anteversão/retroversão pélvica aparente', 'Assimetria pélvica / descarga de peso', 'Hiperextensão/flexão de joelhos', 'Alteração de apoio plantar'],
+        depois: ['Vista anterior/lateral/posterior e observações:\n__a'] },
+      { t: '9. MOBILIDADE, FORÇA E FUNÇÃO', tipo: 'matriz', cab: ['Componente', 'Avaliação / resultado', 'Observações'], rows: [
+        ['Mobilidade torácica e lombar', '()Preservada ()Limitada ()Dolorosa', '__'], ['Mobilidade de quadril', '()Preservada ()Limitada ()Dolorosa', '__'],
+        ['Força de membros inferiores (conforme tolerância)', '()Funcional ()Reduzida ()Assimétrica', '__'],
+        ['Equilíbrio estático/dinâmico', '()Adequado ()Alterado ()Não testado', '__'],
+        ['Marcha', '()Sem alteração evidente ()Alterada ()Não testada', '__'],
+        ['Sentar e levantar', '()Independente ()Com dificuldade ()Não testado', '__'],
+        ['Subir degrau/escadas (se seguro)', '()Sem dificuldade ()Com dificuldade ()Não testado', '__'],
+        ['Transferência de decúbito / virar na cama', '()Sem dificuldade ()Com dificuldade ()Não testado', '__'],
+        ['Tolerância ao esforço', '()Boa ()Reduzida ()Não testada', '__'] ],
+        depois: ['Testes funcionais realizados e resultado: __a'], aviso: 'Não realizar testes provocativos ou de equilíbrio com risco de queda; adaptar à idade gestacional, sintomas e segurança.' },
+      { t: '10. AVALIAÇÃO RESPIRATÓRIA', tipo: 'campos', cab: ['Item', 'Resultado'], rows: [
+        ['Padrão respiratório observado', '[]Costal superior []Torácico []Diafragmático []Misto'],
+        ['Expansibilidade torácica', '()Preservada ()Reduzida ()Assimétrica ()Não avaliada'],
+        ['Dispneia aos esforços/repouso', '()Não ()Aos esforços ()Em repouso (sinal de alerta)'],
+        ['Coordenação respiração-movimento', '()Adequada ()Necessita treino'], ['Estratégia de controle respiratório', '__a'] ],
+        depois: ['Observações: __a'] },
+      { t: '11. AVALIAÇÃO ABDOMINAL E PAREDE ABDOMINAL', tipo: 'campos', cab: ['Item', 'Resultado / medida'], rows: [
+        ['Abaulamento/linha média durante movimento', '()Não observado ()Observado Descrição: __'],
+        ['Controle da pressão intra-abdominal', '()Adequado ()Necessita orientação ()Não avaliado'],
+        ['Coordenação respiratória durante esforço leve', '()Adequada ()Inadequada ()Não avaliada'],
+        ['Diástase dos retos — se clinicamente indicada', 'Local: __ Medida: __ Método: __'],
+        ['Tensão/funcionalidade da linha alba — se avaliada', '__'], ['Cicatrizes abdominais (se houver)', '__'] ],
+        aviso: 'Registrar idade gestacional, posição, método e condições de medida. Interpretar com cautela durante a gestação; não provocar esforço excessivo.' },
+      { t: '12. ASSOALHO PÉLVICO E FUNÇÕES UROGINECOLÓGICAS', tipo: 'radio', cab: ['Sintoma', 'Frequência / detalhes'], opc: ['Não', 'Sim'], rows: [
+        'Perda urinária ao tossir/espirrar/esforço', 'Urgência urinária / aumento da frequência', 'Dificuldade para iniciar ou esvaziar a bexiga',
+        'Perda de gases ou fezes', 'Constipação / esforço evacuatório', 'Sensação de peso/pressão vaginal', 'Dor pélvica / dor sexual', 'Dificuldade de contrair ou relaxar'],
+        depois: ['Avaliação funcional externa, se indicada: ()Não realizada ()Realizada — achados: __',
+          'Avaliação interna vaginal: ()Não indicada ()Adiada ()Considerada após triagem e consentimento',
+          'Consentimento específico registrado, profissional habilitado e ausência de contraindicações verificados: ()Sim ()Não'],
+        aviso: 'Nota: exame interno não é obrigatório; deve respeitar consentimento, privacidade, habilitação profissional, contexto obstétrico e contraindicações.' },
+      { t: '13. HÁBITOS E PARTICIPAÇÃO', tipo: 'campos', cab: ['Item', 'Registro'], rows: [
+        ['Atividade física antes e durante a gestação', '__a'], ['Sono / posição confortável', '__a'], ['Hidratação e hábitos intestinais', '__a'],
+        ['Atividades domésticas / trabalho', '__a'], ['Rede de apoio / barreiras à atividade', '__a'], ['Medos ou dúvidas sobre exercício, parto e pós-parto', '__a'] ] },
+      { t: '14. SÍNTESE E DIAGNÓSTICO FISIOTERAPÊUTICO', tipo: 'linhas', rows: [
+        'Principais achados objetivos:\n__a', 'Limitações funcionais / fatores contribuintes:\n__a', 'Diagnóstico fisioterapêutico funcional:\n__a',
+        'Prognóstico e fatores que podem influenciar a evolução:\n__a'] },
+      { t: '15. OBJETIVOS TERAPÊUTICOS', tipo: 'linhas', rows: [
+        '[]Reduzir dor e melhorar conforto nas atividades diárias', '[]Melhorar mobilidade, postura e mecânica corporal',
+        '[]Melhorar força, resistência, equilíbrio e tolerância ao esforço com segurança', '[]Treinar respiração, relaxamento e coordenação com movimento',
+        '[]Orientar manejo de pressão intra-abdominal e parede abdominal', '[]Prevenir/gerenciar sintomas do assoalho pélvico conforme avaliação',
+        '[]Preparar para o parto e estratégias de movimento/respiração', '[]Orientar cuidados e recuperação no pós-parto',
+        'Objetivos individualizados e prazo de reavaliação:\n__a'] },
+      { t: '16. PLANO TERAPÊUTICO / CONDUTA', tipo: 'matriz', cab: ['Intervenção', 'Dose/frequência individualizada', 'Resposta / observações'], rows: [
+        ['Educação e orientações posturais', '__a', '__a'], ['Mobilidade / exercícios terapêuticos', '__a', '__a'],
+        ['Fortalecimento / condicionamento adaptado', '__a', '__a'], ['Treino respiratório / relaxamento', '__a', '__a'],
+        ['Treino funcional / equilíbrio', '__a', '__a'], ['Treino do assoalho pélvico (se indicado)', '__a', '__a'], ['Orientações domiciliares', '__a', '__a'] ],
+        depois: ['Frequência sugerida: __n sessões/semana Reavaliação em: __d', 'Precauções individualizadas / contato com equipe obstétrica: __a'] },
+      { t: '17. EVOLUÇÃO / REAVALIAÇÃO', tipo: 'livre', cab: ['Data|d', 'Idade gestacional', 'Queixa/escala de dor', 'Achados e resposta', 'Conduta / plano'], n: 3 },
+      { t: '18. ORIENTAÇÕES E CONSENTIMENTO', nota: 'Expliquei os objetivos, procedimentos, possíveis desconfortos, alternativas e a possibilidade de interromper a avaliação/sessão a qualquer momento. A gestante pôde esclarecer dúvidas. Autorizo a avaliação e o tratamento fisioterapêutico propostos, compreendendo que serão adaptados à minha condição clínica e às orientações obstétricas.',
+        tipo: 'linhas', rows: ['Gestante (nome): __=pac.nome Assinatura: __s', 'Fisioterapeuta: __=prof.nome CREFITO: __=prof.reg Assinatura: __s',
+          'Data: __d=hoje', 'Observações adicionais:\n__a'] },
+    ], rodape: true,
+  },
+
+  evol_ortopedica: {
+    nome: 'Evolução — Fisioterapia Ortopédica', grupo: 'Evolução', estilo: 'evol',
+    titulo: 'FICHA DE EVOLUÇÃO FISIOTERAPÊUTICA', sub: 'FISIOTERAPIA ORTOPÉDICA', cabProf: true,
+    secoes: [
+      { t: '1. IDENTIFICAÇÃO DO PACIENTE', tipo: 'linhas', rows: ['Nome: __=pac.nome', 'Data de nascimento: __d=pac.nasc', 'Data do atendimento: __d=hoje',
+        'Número da sessão: __n=sessao', 'Diagnóstico clínico: __', 'Diagnóstico fisioterapêutico: __', 'Região acometida: __', 'Lado: ()Direito ()Esquerdo ()Bilateral'] },
+      { t: '2. EVOLUÇÃO CLÍNICA', tipo: 'linhas', rows: [
+        'Queixa principal:\n__a',
+        'Relato do paciente desde a última sessão:\n[]Melhora da dor\n[]Redução do edema\n[]Melhora da mobilidade\n[]Melhora da força muscular\n[]Melhora da capacidade funcional\n[]Sem alterações significativas\n[]Piora dos sintomas',
+        'Descrição da evolução:\n__a',
+        'Escala de dor (EVA — 0 a 10):\nAntes da sessão: __n\nApós a sessão: __n',
+        'Presença de sinais ou sintomas:\n[]Dor []Edema []Rigidez []Fraqueza muscular\n[]Limitação de movimento []Alteração da marcha\n[]Parestesia []Instabilidade articular\n[]Outros: __'] },
+      { t: '3. AVALIAÇÃO FUNCIONAL', tipo: 'linhas', rows: ['Amplitude de movimento (ADM):\n__a', 'Força muscular (escala de 0 a 5):\n__a',
+        'Palpação e sensibilidade, quando indicadas:\n__a', 'Marcha e equilíbrio, quando aplicáveis:\n__a', 'Limitações nas atividades de vida diária:\n__a'] },
+      { t: '4. CONDUTAS FISIOTERAPÊUTICAS REALIZADAS', tipo: 'linhas', rows: [
+        '[]Cinesioterapia', '[]Exercícios de mobilidade articular', '[]Alongamentos musculares', '[]Fortalecimento muscular',
+        '[]Exercícios de equilíbrio e propriocepção', '[]Treino de marcha', '[]Treino funcional', '[]Terapia manual', '[]Mobilização articular',
+        '[]Recursos analgésicos físicos', '[]Crioterapia', '[]Termoterapia', '[]Orientações posturais e ergonômicas',
+        '[]Orientações para exercícios domiciliares', '[]Outras: __',
+        'Descrição dos exercícios, séries, repetições, cargas e parâmetros utilizados:\n__a'] },
+      { t: '5. RESPOSTA AO TRATAMENTO', tipo: 'linhas', rows: [
+        'Resposta do paciente à sessão:\n[]Boa tolerância\n[]Redução da dor\n[]Melhora da mobilidade\n[]Melhora funcional\n[]Desconforto durante os exercícios\n[]Necessidade de adaptação das condutas',
+        'Descrição da resposta clínica:\n__a', 'Intercorrências:\n__a'] },
+      { t: '6. PLANO TERAPÊUTICO', tipo: 'linhas', rows: ['Objetivos para as próximas sessões:\n__a', 'Condutas planejadas:\n__a', 'Orientações domiciliares:\n__a', 'Previsão de reavaliação: __d'] },
+      { t: '7. ASSINATURA PROFISSIONAL', tipo: 'linhas', rows: ['Fisioterapeuta: __=prof.nome', 'CREFITO: __=prof.reg', 'Assinatura: __s', 'Data: __d=hoje'] },
+    ],
+  },
+
+  evol_pelvica: {
+    nome: 'Evolução — Fisioterapia Pélvica', grupo: 'Evolução', estilo: 'evol',
+    titulo: 'FICHA DE EVOLUÇÃO FISIOTERAPÊUTICA', sub: 'FISIOTERAPIA PÉLVICA', cabProf: true,
+    secoes: [
+      { t: '1. IDENTIFICAÇÃO DO PACIENTE', tipo: 'linhas', rows: ['Nome: __=pac.nome', 'Data de nascimento: __d=pac.nasc', 'Data do atendimento: __d=hoje',
+        'Número da sessão: __n=sessao', 'Diagnóstico fisioterapêutico: __'] },
+      { t: '2. EVOLUÇÃO CLÍNICA', tipo: 'linhas', rows: [
+        'Queixa principal relatada pelo paciente:\n__a',
+        'Evolução desde a última sessão:\n()Melhora dos sintomas\n()Manutenção do quadro\n()Piora dos sintomas\n()Surgimento de novos sintomas',
+        'Relato do paciente sobre o período entre as sessões:\n__a',
+        'Sintomas atuais:', 'Dor pélvica: ()Não ()Sim', 'Perda urinária: ()Não ()Sim', 'Urgência urinária: ()Não ()Sim', 'Alterações intestinais: ()Não ()Sim',
+        'Alterações sexuais: ()Não ()Sim', 'Sensação de peso ou pressão pélvica: ()Não ()Sim', 'Outros: __',
+        'Intensidade da dor (EVA, de 0 a 10): __n', 'Observações clínicas:\n__a'] },
+      { t: '3. CONDUTAS REALIZADAS NA SESSÃO', tipo: 'linhas', rows: [
+        '[]Educação em saúde e orientações comportamentais', '[]Treinamento dos músculos do assoalho pélvico', '[]Treino de relaxamento e percepção perineal',
+        '[]Exercícios respiratórios e coordenação abdominopélvica', '[]Treinamento funcional', '[]Biofeedback', '[]Eletroestimulação, quando indicada',
+        '[]Terapia manual, quando indicada e consentida', '[]Treinamento vesical e/ou intestinal', '[]Orientações para exercícios domiciliares', '[]Outra conduta: __',
+        'Descrição detalhada dos procedimentos, parâmetros e dosagem:\n__a'] },
+      { t: '4. RESPOSTA AO TRATAMENTO', tipo: 'linhas', rows: [
+        'Resposta do paciente durante e após a sessão:\n[]Boa tolerância\n[]Tolerância parcial\n[]Apresentou desconforto\n[]Apresentou dor\n[]Necessitou de adaptação da conduta',
+        'Descrição da resposta clínica:\n__a', 'Intercorrências: __'] },
+      { t: '5. ORIENTAÇÕES E PLANO TERAPÊUTICO', tipo: 'linhas', rows: ['Orientações fornecidas:\n__a', 'Exercícios domiciliares prescritos:\n__a',
+        'Objetivos para as próximas sessões:\n__a', 'Planejamento da próxima sessão:\n__a'] },
+      { t: '6. REGISTRO E ASSINATURA', tipo: 'linhas', rows: ['Observações adicionais:\n__a', 'Fisioterapeuta: __=prof.nome', 'CREFITO: __=prof.reg', 'Assinatura: __s', 'Data: __d=hoje'] },
+    ],
+  },
+
+  evol_pilates: {
+    nome: 'Evolução — Pilates Clínico', grupo: 'Evolução', estilo: 'evol',
+    titulo: 'FICHA DE EVOLUÇÃO FISIOTERAPÊUTICA', sub: 'PILATES CLÍNICO', cabProf: true,
+    secoes: [
+      { t: '1. IDENTIFICAÇÃO DO PACIENTE', tipo: 'linhas', rows: ['Nome: __=pac.nome', 'Data de nascimento: __d=pac.nasc', 'Data do atendimento: __d=hoje',
+        'Número da sessão: __n=sessao', 'Diagnóstico clínico: __', 'Objetivo do tratamento: __'] },
+      { t: '2. EVOLUÇÃO DO PACIENTE', tipo: 'linhas', rows: [
+        'Relato do paciente desde a última sessão:\n__a',
+        'Condição atual:\n()Sem dor\n()Dor leve\n()Dor moderada\n()Dor intensa', 'Local da dor: __', 'Intensidade da dor (EVA — 0 a 10): __n',
+        'Aspectos observados durante a sessão:\n[]Melhora da postura\n[]Melhora da flexibilidade\n[]Melhora da força muscular\n[]Melhora do equilíbrio\n[]Melhora da coordenação motora\n[]Melhora da mobilidade articular\n[]Melhora do controle respiratório\n[]Persistência de limitações funcionais\n[]Outros: __'] },
+      { t: '3. EXERCÍCIOS REALIZADOS', tipo: 'linhas', rows: ['Aparelhos utilizados:\n[]Reformer\n[]Cadillac\n[]Chair\n[]Ladder Barrel\n[]Solo (Mat Pilates)\n[]Outros: __', 'Exercícios realizados e objetivos:'],
+        depois2: { tipo: 'livre', cab: ['Exercício', 'Séries/repetições', 'Objetivo'], n: 4 },
+        fim: ['Acessórios utilizados:\n[]Bola []Faixa elástica []Magic Circle\n[]Rolo []Outros: __', 'Adaptações e nível de resistência utilizado:\n__a'] },
+      { t: '4. ASPECTOS FUNCIONAIS OBSERVADOS', tipo: 'linhas', rows: ['Postura e alinhamento corporal:\n__a', 'Controle motor e estabilidade:\n__a', 'Equilíbrio e coordenação:\n__a',
+        'Respiração e ativação muscular:\n__a', 'Necessidade de auxílio ou correção durante os exercícios:\n__a'] },
+      { t: '5. RESPOSTA À SESSÃO', tipo: 'linhas', rows: [
+        '[]Boa tolerância aos exercícios\n[]Executou os exercícios com independência\n[]Necessitou de correções posturais\n[]Necessitou de adaptações\n[]Apresentou fadiga muscular\n[]Apresentou dor ou desconforto\n[]Evoluiu na execução dos exercícios',
+        'Descrição da resposta do paciente:\n__a'] },
+      { t: '6. PLANO PARA A PRÓXIMA SESSÃO', tipo: 'linhas', rows: ['Objetivos terapêuticos:\n__a', 'Progressão ou adaptação planejada:\n__a', 'Orientações domiciliares:\n__a'] },
+      { t: '7. REGISTRO PROFISSIONAL', tipo: 'linhas', rows: ['Fisioterapeuta: __=prof.nome', 'CREFITO: __=prof.reg', 'Assinatura: __s', 'Data: __d=hoje'] },
+    ],
+  },
+};
+
+// -------------------- FICHAS: motor de preenchimento e impressão --------------------
+let fichaAberta = null;          // ficha em edição {id, modelo, pacienteId, profissional, data, v, nova}
+let fichasFiltroPac = '';
+const fkEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function fkParse(str) {
+  const out = []; const re = /\[\]|\(\)|__([dnas]?)(?:=([a-z]+(?:\.[a-z]+)?))?|\n/g; let last = 0, m;
+  while ((m = re.exec(str))) {
+    if (m.index > last) out.push({ t: 'lit', s: str.slice(last, m.index) });
+    if (m[0] === '[]') out.push({ t: 'cb' });
+    else if (m[0] === '()') out.push({ t: 'rd' });
+    else if (m[0] === '\n') out.push({ t: 'br' });
+    else out.push({ t: 'in', k: m[1] || '', pre: m[2] || '' });
+    last = re.lastIndex;
+  }
+  if (last < str.length) out.push({ t: 'lit', s: str.slice(last) });
+  return out;
+}
+
+function fkIdade(iso) {
+  if (!iso) return '';
+  const n = new Date(iso + 'T12:00:00'), h = new Date();
+  let i = h.getFullYear() - n.getFullYear();
+  if (h.getMonth() < n.getMonth() || (h.getMonth() === n.getMonth() && h.getDate() < n.getDate())) i--;
+  return i >= 0 ? String(i) : '';
+}
+function fkContexto(f) {
+  const pac = db.ler(DB_KEYS.pacientes).find(p => p.id === f.pacienteId) || {};
+  const prof = db.ler(DB_KEYS.profissionais).find(p => p.nome === f.profissional) || {};
+  return {
+    'pac.nome': pac.nome || '', 'pac.nasc': pac.nascimento || '', 'pac.idade': fkIdade(pac.nascimento), 'pac.tel': pac.telefone || '',
+    'prof.nome': f.profissional || prof.nome || '', 'prof.reg': prof.registro || '', 'hoje': f.data || hojeIso(), 'sessao': String(f.sessao || ''),
+  };
+}
+
+// Converte uma "linha" de minilinguagem em HTML (modo 'form' = campos; 'print' = texto)
+function fkRender(str, base, f, modo) {
+  const toks = fkParse(str), ctx = f._ctx, v = f.v;
+  let h = '';
+  for (let i = 0; i < toks.length; i++) {
+    const tk = toks[i], key = base + '_' + i;
+    if (tk.t === 'lit') { h += `<span class="fk-lit">${fkEsc(tk.s)}</span>`; continue; }
+    if (tk.t === 'br') { h += '<span class="fk-br"></span>'; continue; }
+    if (tk.t === 'cb' || tk.t === 'rd') {
+      let rotulo = '';
+      if (toks[i + 1] && toks[i + 1].t === 'lit') { rotulo = toks[i + 1].s; i++; }
+      const marcado = tk.t === 'cb' ? !!v[key] : (v[base + '_g'] === key);
+      if (modo === 'print') { h += `<span class="fk-opt"><b class="fk-cx">${marcado ? '☒' : '☐'}</b>${fkEsc(rotulo)}</span>`; continue; }
+      h += tk.t === 'cb'
+        ? `<label class="fk-opt"><input type="checkbox" data-fk="${key}" ${marcado ? 'checked' : ''}>${fkEsc(rotulo)}</label>`
+        : `<label class="fk-opt"><input type="radio" name="r_${base}" data-fkr="${base}_g" value="${key}" ${marcado ? 'checked' : ''}>${fkEsc(rotulo)}</label>`;
+      continue;
+    }
+    // campos de preenchimento
+    let val = v[key];
+    if (val === undefined && tk.pre && f.nova) val = ctx[tk.pre] || '';
+    if (val === undefined) val = '';
+    if (tk.k === 's') { h += modo === 'print' ? '<span class="fk-sign"></span>' : '<span class="fk-lit muted">(assinar na ficha impressa)</span>'; continue; }
+    if (modo === 'print') {
+      if (tk.k === 'a') h += `<div class="fk-pta">${fkEsc(val)}</div>`;
+      else { const t = tk.k === 'd' && val ? formatarData(val) : val; h += `<span class="fk-pv ${t ? '' : 'vazio'}">${fkEsc(t)}</span>`; }
+      continue;
+    }
+    if (tk.k === 'a') h += `<textarea class="fk-in fk-ta" rows="2" data-fk="${key}">${fkEsc(val)}</textarea>`;
+    else h += `<input class="fk-in fk-t${tk.k}" type="${tk.k === 'd' ? 'date' : tk.k === 'n' ? 'text' : 'text'}" ${tk.k === 'n' ? 'inputmode="decimal"' : ''} data-fk="${key}" value="${fkEsc(val)}">`;
+  }
+  return h;
+}
+
+function fkLinha(str, base, f, modo) { return `<div class="fk-line">${fkRender(str, base, f, modo)}</div>`; }
+
+function fkTabelaLivre(sec, idx, f, modo, pref) {
+  const cab = sec.cab.map(c => c.split('|')), nKey = pref + '_n';
+  const n = Math.max(Number(f.v[nKey]) || 0, sec.n);
+  let h = `<table class="fk-tab"><thead><tr>${cab.map(c => `<th>${fkEsc(c[0])}</th>`).join('')}</tr></thead><tbody>`;
+  for (let r = 0; r < n; r++) {
+    h += '<tr>' + cab.map((c, ci) => `<td data-label="${fkEsc(c[0])}">${fkRender('__' + (c[1] || ''), pref + '_' + r + '_' + ci, f, modo)}</td>`).join('') + '</tr>';
+  }
+  h += '</tbody></table>';
+  if (modo === 'form') h += `<button type="button" class="btn btn-outline fk-add" onclick="fichaAddLinha('${nKey}')"><i class="bi bi-plus-lg"></i> Adicionar linha</button>`;
+  return h;
+}
+
+function fkSecao(sec, idx, f, modo) {
+  const pref = 's' + idx;
+  let h = `<h3 class="fk-sec">${fkEsc(sec.t)}</h3>`;
+  if (sec.nota) h += `<p class="fk-nota">${fkEsc(sec.nota)}</p>`;
+  if (sec.tipo === 'campos') {
+    h += `<table class="fk-tab"><thead><tr><th>${fkEsc(sec.cab[0])}</th><th>${fkEsc(sec.cab[1])}</th></tr></thead><tbody>` +
+      sec.rows.map((r, i) => `<tr><td class="fk-rot">${fkEsc(r[0])}</td><td data-label="${fkEsc(sec.cab[1])}">${fkLinha(r[1], `${pref}_${i}`, f, modo)}</td></tr>`).join('') + '</tbody></table>';
+  } else if (sec.tipo === 'radio') {
+    const op = sec.opc;
+    h += `<table class="fk-tab"><thead><tr><th>${fkEsc(sec.cab[0])}</th>${op.map(o => `<th class="fk-c">${fkEsc(o)}</th>`).join('')}<th>${fkEsc(sec.cab[1])}</th></tr></thead><tbody>` +
+      sec.rows.map((lab, i) => {
+        const base = `${pref}_${i}`, sel = f.v[base + '_g'];
+        const cels = op.map((o, oi) => {
+          const key = base + '_o' + oi, on = sel === key;
+          return `<td class="fk-c" data-label="${fkEsc(o)}">` + (modo === 'print' ? `<b class="fk-cx">${on ? '☒' : '☐'}</b>`
+            : `<input type="radio" name="r_${base}" data-fkr="${base}_g" value="${key}" ${on ? 'checked' : ''} aria-label="${fkEsc(o)}">`) + '</td>';
+        }).join('');
+        return `<tr><td class="fk-rot">${fkEsc(lab)}</td>${cels}<td data-label="${fkEsc(sec.cab[1])}">${fkRender('__a', base + '_d', f, modo)}</td></tr>`;
+      }).join('') + '</tbody></table>';
+  } else if (sec.tipo === 'matriz') {
+    h += `<table class="fk-tab"><thead><tr>${sec.cab.map(c => `<th>${fkEsc(c)}</th>`).join('')}</tr></thead><tbody>` +
+      sec.rows.map((r, i) => `<tr><td class="fk-rot">${fkEsc(r[0])}</td>${r.slice(1).map((m, ci) => `<td data-label="${fkEsc(sec.cab[ci + 1])}">${fkLinha(m, `${pref}_${i}_${ci}`, f, modo)}</td>`).join('')}</tr>`).join('') + '</tbody></table>';
+  } else if (sec.tipo === 'livre') {
+    h += fkTabelaLivre(sec, idx, f, modo, pref);
+  } else if (sec.tipo === 'linhas') {
+    h += sec.rows.map((r, i) => fkLinha(r, `${pref}_${i}`, f, modo)).join('');
+    if (sec.depois2) h += fkTabelaLivre(sec.depois2, idx, f, modo, pref + 'x');
+    if (sec.fim) h += sec.fim.map((r, i) => fkLinha(r, `${pref}_f${i}`, f, modo)).join('');
+  }
+  if (sec.depois) h += sec.depois.map((r, i) => fkLinha(r, `${pref}_p${i}`, f, modo)).join('');
+  if (sec.aviso) h += `<p class="fk-nota">${fkEsc(sec.aviso)}</p>`;
+  return h;
+}
+
+function fkDocumento(f, modo) {
+  const m = FICHAS[f.modelo];
+  f._ctx = fkContexto(f);
+  let h = `<div class="fk-cab"><h2 class="fk-titulo">${fkEsc(m.titulo)}</h2>` + (m.sub ? `<div class="fk-sub">${fkEsc(m.sub)}</div>` : '') + '</div>';
+  if (m.cabProf) h += `<div class="fk-line fk-prof"><b>Fisioterapeuta:</b> ${fkEsc(f._ctx['prof.nome'])}</div><div class="fk-line fk-prof"><b>CREFITO:</b> ${fkEsc(f._ctx['prof.reg'])}</div>`;
+  if (m.topo) h += m.topo.map((r, i) => fkLinha(r, 'top_' + i, f, modo)).join('');
+  h += m.secoes.map((s, i) => fkSecao(s, i, f, modo)).join('');
+  if (m.rodape) h += `<p class="fk-rodape">${fkEsc(FICHA_RODAPE)}</p>`;
+  return h;
+}
+
+// ---- leitura do formulário ----
+function fkColetar() {
+  const v = {};
+  document.querySelectorAll('#fichaForm [data-fk]').forEach(el => {
+    const k = el.dataset.fk;
+    if (el.type === 'checkbox') { if (el.checked) v[k] = true; }
+    else if (el.value !== '') v[k] = el.value;
+  });
+  document.querySelectorAll('#fichaForm [data-fkr]').forEach(el => { if (el.checked) v[el.dataset.fkr] = el.value; });
+  return v;
+}
+function fichaAddLinha(nKey) {
+  fichaAberta.v = { ...fkColetar() };
+  const secIdx = nKey;
+  // total atual = maior entre o definido e o mínimo da seção
+  fichaAberta.v[nKey] = (Number(fichaAberta.v[nKey]) || fkMinLinhas(nKey)) + 1;
+  desenharEditorFicha();
+}
+function fkMinLinhas(nKey) {
+  const m = FICHAS[fichaAberta.modelo];
+  const mm = /^s(\d+)(x?)_n$/.exec(nKey); if (!mm) return 0;
+  const sec = m.secoes[Number(mm[1])];
+  return mm[2] ? sec.depois2.n : sec.n;
+}
+
+// ---- páginas ----
+function renderFichas(root) {
+  if (fichaAberta) return desenharEditorFicha();
+  const pacs = db.ler(DB_KEYS.pacientes).sort((a, b) => a.nome.localeCompare(b.nome));
+  let lista = db.ler(DB_KEYS.fichas).sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+  if (fichasFiltroPac) lista = lista.filter(x => x.pacienteId === fichasFiltroPac);
+  root.innerHTML = `
+    <div class="page-head">
+      <div><h1>Fichas</h1><p>Fichas de avaliação e evolução no modelo da clínica</p></div>
+      <button class="btn btn-primary" onclick="abrirModalNovaFicha()"><i class="bi bi-plus-lg"></i> Nova ficha</button>
+    </div>
+    <div class="field" style="max-width:380px;"><label>Paciente</label>
+      <select onchange="fichasFiltroPac=this.value; renderizarPagina()">
+        <option value="">Todos os pacientes</option>
+        ${pacs.map(p => `<option value="${p.id}" ${p.id === fichasFiltroPac ? 'selected' : ''}>${fkEsc(p.nome)}</option>`).join('')}
+      </select></div>
+    <div class="table-card"><table>
+      <thead><tr><th>Data</th><th>Paciente</th><th>Ficha</th><th>Profissional</th><th></th></tr></thead>
+      <tbody>${lista.length ? lista.map(f => {
+        const p = pacs.find(x => x.id === f.pacienteId), m = FICHAS[f.modelo];
+        return `<tr><td>${f.data ? formatarData(f.data) : '—'}</td><td>${p ? fkEsc(p.nome) : '<span class="muted">removido</span>'}</td>
+          <td>${m ? fkEsc(m.nome) : fkEsc(f.modelo)}</td><td class="muted">${fkEsc(f.profissional || '')}</td>
+          <td><div class="row-actions">
+            <button title="Abrir / editar" onclick="abrirFicha('${f.id}')"><i class="bi bi-pencil-square"></i></button>
+            <button title="Imprimir / salvar PDF" onclick="imprimirFicha('${f.id}')"><i class="bi bi-printer"></i></button>
+            <button title="Excluir" onclick="excluirFicha('${f.id}')"><i class="bi bi-trash3"></i></button>
+          </div></td></tr>`;
+      }).join('') : `<tr><td colspan="5"><div class="empty"><i class="bi bi-file-earmark-medical"></i>Nenhuma ficha ainda. Toque em "Nova ficha".</div></td></tr>`}</tbody>
+    </table></div>`;
+}
+
+function irParaFichas(pacId) { fichasFiltroPac = pacId || ''; fichaAberta = null; irPara('fichas'); }
+
+function abrirModalNovaFicha() {
+  const pacs = db.ler(DB_KEYS.pacientes).sort((a, b) => a.nome.localeCompare(b.nome));
+  if (!pacs.length) { toast('Cadastre um paciente primeiro.', true); return; }
+  document.getElementById('novaFichaPac').innerHTML = pacs.map(p => `<option value="${p.id}" ${p.id === fichasFiltroPac ? 'selected' : ''}>${fkEsc(p.nome)}</option>`).join('');
+  const grupos = {};
+  Object.entries(FICHAS).forEach(([id, m]) => { (grupos[m.grupo] = grupos[m.grupo] || []).push([id, m]); });
+  document.getElementById('novaFichaModelo').innerHTML = Object.entries(grupos).map(([g, arr]) =>
+    `<optgroup label="${g}">${arr.map(([id, m]) => `<option value="${id}">${fkEsc(m.nome)}</option>`).join('')}</optgroup>`).join('');
+  const profs = db.ler(DB_KEYS.profissionais).filter(p => p.ativo && (!ehProfissional() || p.nome === nomeProfissionalLogado()));
+  document.getElementById('novaFichaProf').innerHTML = (profs.length ? profs : [{ nome: usuarioLogado.nome }]).map(p => `<option value="${fkEsc(p.nome)}">${fkEsc(p.nome)}</option>`).join('');
+  abrirModal('modalNovaFicha');
+}
+function criarFicha() {
+  const pacienteId = document.getElementById('novaFichaPac').value;
+  const modelo = document.getElementById('novaFichaModelo').value;
+  const profissional = document.getElementById('novaFichaProf').value;
+  const sessao = db.ler(DB_KEYS.fichas).filter(x => x.pacienteId === pacienteId && x.modelo === modelo).length + 1;
+  fichaAberta = { id: db.uid(), modelo, pacienteId, profissional, data: hojeIso(), v: {}, nova: true, sessao };
+  fecharModal('modalNovaFicha');
+  irPara('fichas');
+}
+function abrirFicha(id) {
+  const f = db.ler(DB_KEYS.fichas).find(x => x.id === id); if (!f) return;
+  fichaAberta = { ...f, v: { ...(f.v || {}) }, nova: false };
+  renderizarPagina();
+}
+function desenharEditorFicha() {
+  const root = document.getElementById('pageRoot'), f = fichaAberta, m = FICHAS[f.modelo];
+  const pac = db.ler(DB_KEYS.pacientes).find(p => p.id === f.pacienteId);
+  root.innerHTML = `
+    <div class="page-head">
+      <div><h1 style="font-size:20px;">${fkEsc(m.nome)}</h1><p>${pac ? fkEsc(pac.nome) : ''} · ${fkEsc(f.profissional)}</p></div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <button class="btn btn-ghost" onclick="fecharEditorFicha()"><i class="bi bi-arrow-left"></i> Voltar</button>
+        <button class="btn btn-outline" onclick="salvarFicha(true)"><i class="bi bi-printer"></i> Imprimir / PDF</button>
+        <button class="btn btn-primary" onclick="salvarFicha(false)"><i class="bi bi-check2"></i> Salvar</button>
+      </div>
+    </div>
+    <div class="fk-doc fk-${m.estilo}" id="fichaForm">${fkDocumento(f, 'form')}</div>
+    <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="salvarFicha(false)"><i class="bi bi-check2"></i> Salvar ficha</button>
+    </div>`;
+}
+function fecharEditorFicha() {
+  if (!confirm('Sair da ficha? Alterações não salvas serão perdidas.')) return;
+  fichaAberta = null; renderizarPagina();
+}
+function salvarFicha(imprimir) {
+  const f = fichaAberta; if (!f) return;
+  const v = fkColetar();
+  const reg = { id: f.id, pacienteId: f.pacienteId, modelo: f.modelo, profissional: f.profissional, data: f.data, v, criadoEm: f.criadoEm || new Date().toISOString(), atualizadoEm: new Date().toISOString() };
+  const lista = db.ler(DB_KEYS.fichas), i = lista.findIndex(x => x.id === f.id);
+  if (i >= 0) lista[i] = { ...lista[i], ...reg }; else lista.push(reg);
+  db.salvar(DB_KEYS.fichas, lista);
+  fichaAberta = { ...reg, nova: false };
+  toast('Ficha salva.');
+  if (imprimir) imprimirFicha(f.id); else desenharEditorFicha();
+}
+function excluirFicha(id) {
+  if (!confirm('Excluir esta ficha?')) return;
+  db.salvar(DB_KEYS.fichas, db.ler(DB_KEYS.fichas).filter(x => x.id !== id));
+  renderizarPagina(); toast('Ficha excluída.');
+}
+
+const FICHA_CSS_IMPRESSAO = `
+@page { size: A4; margin: 14mm 12mm; }
+* { box-sizing: border-box; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; color: #111; margin: 0; padding: 0; }
+.fk-cab { margin-bottom: 8px; }
+.fk-titulo { margin: 0 0 4px; font-size: 17pt; }
+.fk-aval .fk-cab { text-align: center; } .fk-aval .fk-titulo { color: #4B3F9E; font-size: 15pt; }
+.fk-aval .fk-sub { color: #B0405A; font-style: italic; font-size: 9.5pt; }
+.fk-evol .fk-sub { font-size: 13pt; font-weight: 700; margin: 12px 0 6px; }
+.fk-sec { font-size: 11pt; margin: 16px 0 6px; page-break-after: avoid; }
+.fk-aval .fk-sec { color: #4B3F9E; }
+.fk-nota { font-size: 9pt; color: #555; margin: 2px 0 6px; }
+.fk-tab { width: 100%; border-collapse: collapse; margin: 4px 0 6px; page-break-inside: auto; }
+.fk-tab tr { page-break-inside: avoid; }
+.fk-tab th { background: #4B3F9E; color: #fff; font-size: 9pt; text-align: left; padding: 4px 6px; border: 1px solid #333; }
+.fk-evol .fk-tab th { background: #eee; color: #111; }
+.fk-tab td { border: 1px solid #333; padding: 4px 6px; vertical-align: top; font-size: 9.5pt; }
+.fk-c { text-align: center; }
+.fk-line { margin: 5px 0; line-height: 1.6; }
+.fk-br { display: block; height: 0; }
+.fk-opt { margin-right: 12px; white-space: nowrap; display: inline-block; }
+.fk-cx { font-size: 11pt; margin-right: 3px; font-weight: 400; }
+.fk-pv { border-bottom: 1px solid #555; padding: 0 4px; min-width: 70px; display: inline-block; }
+.fk-pv.vazio { min-width: 110px; }
+.fk-pta { border-bottom: 1px solid #555; min-height: 26px; white-space: pre-wrap; margin: 2px 0 4px; width: 100%; }
+.fk-sign { display: inline-block; border-bottom: 1px solid #333; width: 230px; height: 18px; }
+.fk-prof { margin: 2px 0; }
+.fk-rodape { text-align: center; color: #777; font-size: 8pt; margin-top: 18px; }
+.fk-add { display: none; }
+`;
+function imprimirFicha(id) {
+  const f0 = db.ler(DB_KEYS.fichas).find(x => x.id === id); if (!f0) return;
+  const f = { ...f0, nova: false, v: f0.v || {} };
+  const m = FICHAS[f.modelo];
+  const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${fkEsc(m.nome)}</title><style>${FICHA_CSS_IMPRESSAO}</style></head>
+    <body><div class="fk-${m.estilo}">${fkDocumento(f, 'print')}</div><script>window.onload=function(){setTimeout(function(){window.print()},400)}<\/script></body></html>`;
+  const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+  const w = window.open(url, '_blank');
+  if (!w) toast('O navegador bloqueou a janela de impressão. Permita pop-ups para este site.', true);
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
 // -------------------- Versão --------------------
 // Regra: x.y.z — z sobe a cada modificação até 50; ao passar de 50, y sobe e z zera;
 // ao y chegar a 10, x sobe e y zera. Ex.: 1.0.50 -> 1.1.0 ; 1.9.50 -> 2.0.0
-const APP_VERSAO = '1.0.9';
+const APP_VERSAO = '1.0.10';
 // Rótulos das colunas para o modo celular (tabelas viram cartões)
 function rotularTabelas(){
   document.querySelectorAll('.table-card table').forEach(t=>{
@@ -5112,6 +5763,7 @@ service cloud.firestore {
     // ---- Dados clínicos: só o profissional dono e o administrador ----
     match /prontuarios/{id}   { allow read: if leitura(['Administrador']); allow create: if admin() || (temPerfil(['Profissional']) && donoNovo()); allow update: if admin() || (temPerfil(['Profissional']) && dono() && mantemDono()); allow delete: if admin() || (temPerfil(['Profissional']) && dono()); }
     match /evolucoes/{id}     { allow read: if leitura(['Administrador']); allow create: if admin() || (temPerfil(['Profissional']) && donoNovo()); allow update: if admin() || (temPerfil(['Profissional']) && dono() && mantemDono()); allow delete: if admin() || (temPerfil(['Profissional']) && dono()); }
+    match /fichas/{id}     { allow read: if leitura(['Administrador']); allow create: if admin() || (temPerfil(['Profissional']) && donoNovo()); allow update: if admin() || (temPerfil(['Profissional']) && dono() && mantemDono()); allow delete: if admin() || (temPerfil(['Profissional']) && dono()); }
     match /escalas/{id}       { allow read: if leitura(['Administrador']); allow create: if admin() || (temPerfil(['Profissional']) && donoNovo()); allow update: if admin() || (temPerfil(['Profissional']) && dono() && mantemDono()); allow delete: if admin() || (temPerfil(['Profissional']) && dono()); }
     match /especialidades/{id} { allow read: if leitura(['Administrador']); allow create: if admin() || (temPerfil(['Profissional']) && donoNovo()); allow update: if admin() || (temPerfil(['Profissional']) && dono() && mantemDono()); allow delete: if admin() || (temPerfil(['Profissional']) && dono()); }
 
@@ -5155,7 +5807,7 @@ async function carregarFirebase(cfg) {
 // -------------------- Autenticação --------------------
 const PERMISSOES = {
   'Administrador': null, // tudo
-  'Profissional': ['dashboard','agenda','pacientes','prontuario','evolucao','escalas','especialidades','documentos'],
+  'Profissional': ['dashboard','agenda','pacientes','prontuario','evolucao','fichas','escalas','especialidades','documentos'],
   'Recepção':     ['dashboard','agenda','pacientes','documentos','whatsapp'],
   'Financeiro':   ['dashboard','financeiro','documentos'],
 };
