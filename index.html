@@ -439,6 +439,15 @@ tbody tr:hover { background: var(--surface-2); }
 .versao-tag { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 8px; }
 .sidebar.collapsed .user-chip .brand-text, .sidebar.collapsed .versao-tag { display: none; }
 
+/* Campos de data/hora: o Safari do iPhone ignora a largura e estoura a tela sem isto */
+input[type="date"], input[type="time"], input[type="month"], input[type="datetime-local"] {
+  -webkit-appearance: none; appearance: none;
+  display: block; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box;
+  min-height: 42px; text-align: left; margin: 0;
+}
+input[type="date"]::-webkit-date-and-time-value, input[type="time"]::-webkit-date-and-time-value,
+input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::-webkit-date-and-time-value { text-align: left; min-height: 1.2em; }
+.field input, .field select, .field textarea, .pront-grid .field input, .pront-grid .field select, .pront-grid .field textarea { box-sizing: border-box; max-width: 100%; }
 #mobileMenuBtn { display: none; }
 #sidebarBackdrop { display: none; position: fixed; inset: 0; background: rgba(4,8,18,.55); z-index: 55; }
 .field input[type="checkbox"] { width: auto; }
@@ -4783,7 +4792,7 @@ document.getElementById('mobileMenuBtn').addEventListener('click', () => {
 // -------------------- Versão --------------------
 // Regra: x.y.z — z sobe a cada modificação até 50; ao passar de 50, y sobe e z zera;
 // ao y chegar a 10, x sobe e y zera. Ex.: 1.0.50 -> 1.1.0 ; 1.9.50 -> 2.0.0
-const APP_VERSAO = '1.0.6';
+const APP_VERSAO = '1.0.7';
 document.querySelectorAll('.app-versao').forEach(el => el.textContent = APP_VERSAO);
 
 // -------------------- Servidor (Firebase) --------------------
