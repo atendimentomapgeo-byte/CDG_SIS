@@ -251,8 +251,6 @@ button { font-family: inherit; }
 }
 .cal-event .ce-hora { font-weight: 700; font-variant-numeric: tabular-nums; }
 .cal-event .ce-nome { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cal-event.st-confirmado { border-left-color: var(--primary); }
-.cal-event.st-aguardando { border-left-color: var(--warn); }
 .cal-event.st-cancelado { border-left-color: var(--text-muted); opacity: .6; text-decoration: line-through; }
 .cal-event:hover { background: var(--border); }
 
@@ -1838,8 +1836,10 @@ function renderAgendaSemana(container) {
                 return `<td class="cal-cell ${diaIso === hojeIso ? 'today-col' : ''}">
                   ${eventos.map(ev => {
                     const p = pacientes.find(p => p.id === ev.pacienteId);
-                    return `<div class="cal-event st-${ev.status}" title="${ev.profissional}${ev.obs ? ' — ' + ev.obs : ''}" onclick="event.stopPropagation(); abrirDetalheEvento('${ev.id}')">
-                      <span class="ce-hora">${ev.hora}</span>
+                    const pfc = db.ler(DB_KEYS.profissionais).find(x => x.nome === ev.profissional);
+                    const corEv = (pfc && pfc.cor) || '#14B8A6';
+                    return `<div class="cal-event st-${ev.status}" style="border-left-color:${corEv}; background:color-mix(in srgb, ${corEv} 16%, transparent);" title="${ev.profissional}${ev.obs ? ' — ' + ev.obs : ''}" onclick="event.stopPropagation(); abrirDetalheEvento('${ev.id}')">
+                      <span class="ce-hora">${ev.hora}–${minParaHm(hmParaMin(ev.hora) + duracaoDoAgendamento(ev))}</span>
                       <span class="ce-nome">${p ? p.nome : 'removido'}</span>
                     </div>`;
                   }).join('')}
@@ -5661,7 +5661,7 @@ function imprimirFicha(id) {
 // -------------------- Versão --------------------
 // Regra: x.y.z — z sobe a cada modificação até 50; ao passar de 50, y sobe e z zera;
 // ao y chegar a 10, x sobe e y zera. Ex.: 1.0.50 -> 1.1.0 ; 1.9.50 -> 2.0.0
-const APP_VERSAO = '1.0.10';
+const APP_VERSAO = '1.0.11';
 // Rótulos das colunas para o modo celular (tabelas viram cartões)
 function rotularTabelas(){
   document.querySelectorAll('.table-card table').forEach(t=>{
