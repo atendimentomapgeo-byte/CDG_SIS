@@ -586,6 +586,15 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
   .fk-tab td:not(.fk-rot):not(.fk-c)[data-label]::before { content: attr(data-label); display: block; font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); }
   .fk-rot { width: 100%; }
 }
+
+.cf-card { background: var(--surface); border: 1px solid var(--warn); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; }
+.cf-head { display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: var(--warn-tint); }
+.cf-head i { font-size: 20px; color: var(--warn); }
+.cf-item { display: flex; gap: 12px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.cf-quando { min-width: 56px; } .cf-quando b { display: block; font-size: 15px; } .cf-quando small { color: var(--text-muted); font-size: 11px; }
+.cf-info { flex: 1; min-width: 150px; }
+.cf-acoes { display: flex; gap: 6px; flex-wrap: wrap; }
+@media (max-width: 640px) { .cf-acoes { width: 100%; } .cf-acoes .btn-primary, .cf-acoes .btn-outline:first-child { flex: 1; } }
 </style>
 </head>
 <body data-theme="dark" data-density="compact">
@@ -1560,9 +1569,11 @@ function renderAgenda(root) {
         <button class="btn btn-primary" onclick="abrirModalAgenda()"><i class="bi bi-plus-lg"></i> Novo agendamento</button>
       </div>
     </div>
+    <div id="agendaConfirmacoes"></div>
     <div id="agendaConteudo"></div>
   `;
 
+  renderCardConfirmacoes();
   renderConteudoAgenda();
 }
 
@@ -1739,6 +1750,56 @@ function irParaHojeAgenda() {
   agendaMes = null; agendaDiaSel = hojeIso();
   renderConteudoAgenda();
 }
+
+// -------------------- CONFIRMAÇÃO 24 h antes (WhatsApp) --------------------
+function agendaPendentesConfirmacao() {
+  const agora = Date.now();
+  return agendaVisivel().filter(a => {
+    if (a.status === 'cancelado' || a.status === 'confirmado') return false;
+    const t = inicioDoSlot(a.data, hmParaMin(a.hora)).getTime();
+    return t > agora && t <= agora + 24 * 3600 * 1000;
+  }).sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora));
+}
+function renderCardConfirmacoes() {
+  const box = document.getElementById('agendaConfirmacoes');
+  if (!box) return;
+  const lista = agendaPendentesConfirmacao();
+  if (!lista.length) { box.innerHTML = ''; return; }
+  const pacs = db.ler(DB_KEYS.pacientes);
+  box.innerHTML = `<div class="cf-card">
+    <div class="cf-head"><i class="bi bi-whatsapp"></i><div><strong>Confirmações das próximas 24 h</strong>
+      <div class="muted" style="font-size:12px;">${lista.length} paciente(s) aguardando confirmação</div></div></div>
+    ${lista.map(a => {
+      const pc = pacs.find(x => x.id === a.pacienteId);
+      const hoje = a.data === hojeIso();
+      const enviada = a.confirmacaoEnviadaEm ? new Date(a.confirmacaoEnviadaEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+      return `<div class="cf-item">
+        <div class="cf-quando"><b>${a.hora}</b><small>${hoje ? 'Hoje' : 'Amanhã'}</small></div>
+        <div class="cf-info"><div>${pc ? fkEsc(pc.nome) : '<span class="muted">removido</span>'}</div><div class="muted" style="font-size:12px;">${fkEsc(a.profissional)}${enviada ? ' · mensagem enviada às ' + enviada : ''}</div></div>
+        <div class="cf-acoes">
+          <button class="btn ${enviada ? 'btn-outline' : 'btn-primary'}" onclick="enviarConfirmacao24h('${a.id}')"><i class="bi bi-whatsapp"></i> ${enviada ? 'Reenviar' : 'Enviar confirmação'}</button>
+          <button class="btn btn-outline" onclick="mudarStatusAgenda('${a.id}','confirmado')" title="Paciente confirmou"><i class="bi bi-check2"></i> Confirmou</button>
+          <button class="btn btn-ghost" onclick="mudarStatusAgenda('${a.id}','cancelado')" title="Paciente cancelou"><i class="bi bi-x"></i></button>
+        </div></div>`;
+    }).join('')}
+  </div>`;
+}
+function enviarConfirmacao24h(id) {
+  const ag = db.ler(DB_KEYS.agenda);
+  const a = ag.find(x => x.id === id); if (!a) return;
+  const pac = db.ler(DB_KEYS.pacientes).find(p => p.id === a.pacienteId);
+  if (!pac) { toast('Paciente não encontrado.', true); return; }
+  const tel = limparTelefoneWhatsapp(pac.telefone);
+  if (!tel) { toast('Este paciente não tem telefone cadastrado.', true); return; }
+  const tpl = db.ler(DB_KEYS.whatsappTemplates).find(t => t.id === 'confirmacao');
+  const texto = preencherVariaveisWhatsapp(tpl ? tpl.texto : 'Olá {nome}! Confirmando sua sessão em {data} às {hora} com {profissional}. Responda 1 para CONFIRMAR ou 2 para CANCELAR.', {
+    nome: pac.nome.split(' ')[0], data: formatarData(a.data), hora: a.hora, profissional: a.profissional, clinica: lerConfig().nome || 'nossa clínica' });
+  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(texto)}`, '_blank');
+  a.confirmacaoEnviadaEm = new Date().toISOString();
+  db.salvar(DB_KEYS.agenda, ag);
+  renderCardConfirmacoes();
+}
+setInterval(() => { if (paginaAtual === 'agenda' && !(typeof fichaAberta !== 'undefined' && fichaAberta)) renderCardConfirmacoes(); }, 60000);
 
 function renderAgendaLista(container) {
   const pacientes = db.ler(DB_KEYS.pacientes);
@@ -5661,7 +5722,7 @@ function imprimirFicha(id) {
 // -------------------- Versão --------------------
 // Regra: x.y.z — z sobe a cada modificação até 50; ao passar de 50, y sobe e z zera;
 // ao y chegar a 10, x sobe e y zera. Ex.: 1.0.50 -> 1.1.0 ; 1.9.50 -> 2.0.0
-const APP_VERSAO = '1.0.11';
+const APP_VERSAO = '1.0.12';
 // Rótulos das colunas para o modo celular (tabelas viram cartões)
 function rotularTabelas(){
   document.querySelectorAll('.table-card table').forEach(t=>{
