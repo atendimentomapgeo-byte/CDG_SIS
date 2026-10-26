@@ -76,7 +76,8 @@ a { text-decoration: none; color: inherit; }
 button { font-family: inherit; }
 
 /* ---------- Layout ---------- */
-.app { display: flex; min-height: 100vh; }
+.app { display: flex; min-height: 100vh; min-height: 100dvh; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 .sidebar {
   width: 258px;
@@ -88,7 +89,7 @@ button { font-family: inherit; }
   transition: width .2s ease;
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: 100vh; height: 100dvh;
   overflow-y: auto;
   z-index: 20;
 }
@@ -168,7 +169,9 @@ button { font-family: inherit; }
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: var(--font-display); font-size: 12.5px;
 }
 
-.page { padding: 22px 30px 60px; max-width: 1360px; width: 100%; margin: 0 auto; }
+.page { padding: 22px clamp(14px, 2.2vw, 40px) 60px; max-width: 1360px; width: 100%; margin: 0 auto; }
+@media (min-width: 1700px) { .page { max-width: 1640px; } }
+@media (min-width: 2300px) { .page { max-width: 2000px; } html { font-size: 18px; } }
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: var(--gap-grid); flex-wrap: wrap; gap: 12px; }
 .page-head h1 { font-family: var(--font-display); font-size: 21px; font-weight: 800; margin: 0; }
 .page-head p { color: var(--text-muted); margin: 3px 0 0; font-size: 12.5px; }
@@ -230,7 +233,9 @@ button { font-family: inherit; }
 }
 .week-nav button:hover { color: var(--text); }
 
-.cal-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: auto; }
+.cal-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: auto; min-height: 300px; }
+.cal-time-col { position: sticky; left: 0; z-index: 1; }
+.cal-head-row th.cal-time-col { z-index: 3; }
 .cal-table { width: 100%; border-collapse: collapse; min-width: 760px; }
 .cal-table th, .cal-table td { border: 1px solid var(--border); }
 .cal-head-row th {
@@ -269,7 +274,7 @@ tbody tr:hover { background: var(--surface-2); }
 .badge-warn { background: var(--warn-tint); color: var(--warn); }
 .badge-off { background: var(--surface-2); color: var(--text-muted); }
 .badge-danger { background: var(--danger-tint); color: var(--danger); }
-.row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.row-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
 .row-actions button {
   width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer;
 }
@@ -483,21 +488,6 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
   .btn { min-height: 40px; }
   .login-card { padding: 22px 18px; }
   .tabs { -webkit-overflow-scrolling: touch; }
-  /* tabelas viram cartões empilhados no celular */
-  .table-card { overflow: hidden; }
-  .table-card table { min-width: 0; }
-  .table-card table, .table-card tbody, .table-card tr, .table-card td { display: block; width: 100%; }
-  .table-card thead { display: none; }
-  .table-card tbody tr { padding: 10px 14px; border-bottom: 1px solid var(--border); }
-  .table-card tbody tr:last-child { border-bottom: none; }
-  .table-card tbody td { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 5px 0; border: none; text-align: right; font-size: 13.5px; word-break: break-word; }
-  .table-card tbody td::before { content: attr(data-label); flex: 0 0 auto; max-width: 42%; text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
-  .table-card tbody td[data-label=""]::before, .table-card tbody td:not([data-label])::before { display: none; }
-  .table-card tbody td[data-label=""] { justify-content: flex-end; padding-top: 8px; }
-  .table-card tbody td[colspan] { display: block; text-align: center; }
-  .table-card tbody td[colspan]::before { display: none; }
-  .table-card .empty { text-align: center; padding: 28px 12px; }
-  .table-card tbody tr:hover { background: transparent; }
   /* janelas viram "gaveta" na parte de baixo da tela */
   .modal-backdrop-custom { padding: 0; align-items: flex-end; }
   .modal-box { max-width: 100%; max-height: 94vh; max-height: 94dvh; border-radius: 16px 16px 0 0; }
@@ -595,6 +585,42 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
 .cf-info { flex: 1; min-width: 150px; }
 .cf-acoes { display: flex; gap: 6px; flex-wrap: wrap; }
 @media (max-width: 640px) { .cf-acoes { width: 100%; } .cf-acoes .btn-primary, .cf-acoes .btn-outline:first-child { flex: 1; } }
+
+@media (max-width: 760px) {
+  /* tabelas viram cartões empilhados no celular */
+  .table-card { overflow: hidden; }
+  .table-card table { min-width: 0; }
+  .table-card table, .table-card tbody, .table-card tr, .table-card td { display: block; width: 100%; }
+  .table-card thead { display: none; }
+  .table-card tbody tr { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .table-card tbody tr:last-child { border-bottom: none; }
+  .table-card tbody td { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 5px 0; border: none; text-align: right; font-size: 13.5px; word-break: break-word; }
+  .table-card tbody td::before { content: attr(data-label); flex: 0 0 auto; max-width: 42%; text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+  .table-card tbody td[data-label=""]::before, .table-card tbody td:not([data-label])::before { display: none; }
+  .table-card tbody td[data-label=""] { justify-content: flex-end; padding-top: 8px; }
+  .table-card tbody td[colspan] { display: block; text-align: center; }
+  .table-card tbody td[colspan]::before { display: none; }
+  .table-card .empty { text-align: center; padding: 28px 12px; }
+  .table-card tbody tr:hover { background: transparent; }
+}
+/* ---- Adaptação a qualquer tela ---- */
+@media (max-height: 520px) and (orientation: landscape) {
+  .topbar { height: 48px; }
+  .page { padding-top: 10px; }
+  .modal-box { max-height: 100dvh; border-radius: 0; }
+  .modal-backdrop-custom { padding: 0; }
+  .login-card { max-height: 100dvh; overflow-y: auto; }
+}
+@media (hover: none) and (pointer: coarse) {
+  tbody tr:hover { background: transparent; }
+  .btn, .icon-btn, .nav-item { min-height: 40px; }
+}
+@media (max-width: 360px) {
+  .page { padding-left: 10px; padding-right: 10px; }
+  .cm-num { width: 32px; height: 32px; font-size: 13px; }
+  .page-head h1 { font-size: 17px; }
+  .view-toggle button { padding-left: 8px; padding-right: 8px; }
+}
 </style>
 </head>
 <body data-theme="dark" data-density="compact">
@@ -634,7 +660,7 @@ input[type="month"]::-webkit-date-and-time-value, input[type="datetime-local"]::
       <button class="icon-btn d-md-none" id="mobileMenuBtn"><i class="bi bi-list"></i></button>
       <div class="search">
         <i class="bi bi-search"></i>
-        <input type="text" placeholder="Buscar paciente, agendamento...">
+        <input type="search" name="busca-global" autocomplete="off" placeholder="Buscar paciente, agendamento...">
       </div>
       <div class="spacer"></div>
       <span id="syncStatus" class="muted" style="font-size:11.5px; white-space:nowrap;"></span>
@@ -1764,7 +1790,7 @@ function renderCardConfirmacoes() {
   const box = document.getElementById('agendaConfirmacoes');
   if (!box) return;
   const lista = agendaPendentesConfirmacao();
-  if (!lista.length) { box.innerHTML = ''; return; }
+  if (!lista.length) { box.innerHTML = ''; setTimeout(ajustarAlturaCalendario, 0); return; }
   const pacs = db.ler(DB_KEYS.pacientes);
   box.innerHTML = `<div class="cf-card">
     <div class="cf-head"><i class="bi bi-whatsapp"></i><div><strong>Confirmações das próximas 24 h</strong>
@@ -1798,6 +1824,7 @@ function enviarConfirmacao24h(id) {
   a.confirmacaoEnviadaEm = new Date().toISOString();
   db.salvar(DB_KEYS.agenda, ag);
   renderCardConfirmacoes();
+  ajustarAlturaCalendario();
 }
 setInterval(() => { if (paginaAtual === 'agenda' && !(typeof fichaAberta !== 'undefined' && fichaAberta)) renderCardConfirmacoes(); }, 60000);
 
@@ -1913,7 +1940,25 @@ function renderAgendaSemana(container) {
     </div>
   `;
   container.innerHTML = html;
+  const wrap = container.querySelector('.cal-wrap');
+  if (wrap && agendaWeekOffset === 0) {
+    const linha = [...wrap.querySelectorAll('tbody tr')].find(tr => parseInt(tr.firstElementChild.textContent, 10) >= new Date().getHours());
+    if (linha) wrap.scrollTop = Math.max(0, linha.offsetTop - 90);
+  }
+  ajustarAlturaCalendario();
 }
+function ajustarAlturaCalendario() {
+  const w = document.querySelector('.cal-wrap');
+  if (!w) return;
+  const topo = w.getBoundingClientRect().top;
+  w.style.maxHeight = Math.max(300, window.innerHeight - topo - 16) + 'px';
+}
+window.addEventListener('resize', ajustarAlturaCalendario);
+window.addEventListener('orientationchange', () => setTimeout(ajustarAlturaCalendario, 300));
+window.addEventListener('resize', () => {
+  // ao passar para tela grande, fecha a gaveta do menu
+  if (window.innerWidth > 980) { const sb = document.getElementById('sidebar'); if (sb) sb.classList.remove('mobile-open'); const bd = document.getElementById('sidebarBackdrop'); if (bd) bd.classList.remove('show'); }
+});
 
 function navegarSemana(delta) {
   agendaWeekOffset += delta;
@@ -5722,7 +5767,7 @@ function imprimirFicha(id) {
 // -------------------- Versão --------------------
 // Regra: x.y.z — z sobe a cada modificação até 50; ao passar de 50, y sobe e z zera;
 // ao y chegar a 10, x sobe e y zera. Ex.: 1.0.50 -> 1.1.0 ; 1.9.50 -> 2.0.0
-const APP_VERSAO = '1.0.12';
+const APP_VERSAO = '1.0.14';
 // Rótulos das colunas para o modo celular (tabelas viram cartões)
 function rotularTabelas(){
   document.querySelectorAll('.table-card table').forEach(t=>{
